@@ -9,6 +9,14 @@ First create a virtual environment (venv)
 2. .venv/Scripts/activate
 3. pip install -r requirements.txt
 
+Then, setup your python venv as your kernel for running the notebooks
+1. open a notebook
+2. select choose a kernel
+3. select python environments
+4. select create python environments
+5. select enter interpreter path
+6. choose ./.venv/Scripts/python.exe to select your created venv as your kernel
+
 Then choose your venv as your python kernel when running the notebook
 
 ## References
