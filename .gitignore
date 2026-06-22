@@ -1,2 +1,5 @@
 # don't commit virtual environments
 .venv
+
+# ignore pycache
+__pycache__/
