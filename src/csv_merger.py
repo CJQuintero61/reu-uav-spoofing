@@ -2,7 +2,7 @@
 csv_merger.py
 06/22/2026
 
-This file merges multiple csv files into a single csv
+This file converts a ulog file to many csv files then merges relevant csv files into one csv file.
 
 To use:
     instantiate this class and specify the input ulog file, the input folder to store the
@@ -40,6 +40,7 @@ class CSVMerger:
         "estimator_innovation_test_ratios_0.csv",
     ]
 
+
     def __init__(self, ulog_file, input_folder, output_file, label):
         """
         params:
@@ -56,15 +57,11 @@ class CSVMerger:
     
 
     def convert_ulog_file(self):
-        print(f'Converting {self.ulog_file} to csv files in {self.input_folder}')
-
         # convert ulog file to csv files
         subprocess.run(f"ulog2csv {self.ulog_file} -o {self.input_folder}", stdout=subprocess.DEVNULL)
 
 
     def merge_csv_files(self):
-        print(f'Merging csv files in {self.input_folder} into {self.output_file}')
-
         # merge only relevant csv files
         files = self._filter_files()
 
@@ -100,6 +97,7 @@ class CSVMerger:
                 files.append(f)
         
         return files
+
 
 # change constructor params as needed or call in a separate module
 if __name__ == "__main__":
