@@ -4,7 +4,7 @@ svc.py
 
 This file implements the support vector classifier
 """
-from abstracts import AbstractModel
+from src.drone_basics.abstracts import AbstractModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -51,7 +51,9 @@ class SVCModel(AbstractModel):
         return self.model_prediction
 
     def evaluate(self, data):
-        self.acc= accuracy_score(data.Y_Test, self.model_prediction)
+        """evaluate model predictions on the test set"""
+        
+        self.accuracy= accuracy_score(data.Y_Test, self.model_prediction)
         self.precision = precision_score(data.Y_Test, self.model_prediction, average="weighted")
         self.recall = recall_score(data.Y_Test, self.model_prediction, average="weighted")
         self.f1 = f1_score(data.Y_Test, self.model_prediction, average="weighted")

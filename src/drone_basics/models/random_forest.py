@@ -4,7 +4,7 @@ random_forest.py
 
 This file implements the random forest classifier
 """
-from abstracts import AbstractModel
+from src.drone_basics.abstracts import AbstractModel
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
