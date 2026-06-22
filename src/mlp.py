@@ -1,10 +1,25 @@
+"""
+MLP code for one of our models for the classification models
+
+Use with the abstract and factory.
+
+The pipeline for this specific file:
+
+-> Def train_model()
+  1) Runs library fit functio
+
+-> Def Predict()
+  1) Runs library predict function
+
+-> Def Evaluate()
+  1) Get the scores for all metrics.
+  2) Print mertrics.
+"""
+
 #Model abtract
 from drone_basics.abstracts import AbstractModel
 
-"""
-Module for mlp modle implementation
-To use elements from the abstract method
-"""
+
 
 #Imports for models
 from sklearn.neural_network import MLPClassifier #MLP
@@ -14,10 +29,15 @@ class MLPModel(AbstractModel):
     def __init__(self):
         super().__init__()
         
-        #model with default parameters
-        self.mlp_class = MLPClassifier()
+        #model with default parameters = 100% nope
+        self.mlp_class = MLPClassifier(
+            hidden_layer_sizes=(100,),
+            activation="relu",
+            solver="adam",
+            max_iter=500
+        )
 
-    def fit(self, data):
+    def train_model(self, data):
         data.scale_data()
         self.model_fit = self.mlp_class.fit(data.X_Train, data.Y_Train)
     
@@ -32,4 +52,11 @@ class MLPModel(AbstractModel):
         self.f1 = f1_score(data.Y_Test, self.model_prediction, average="weighted")
         self.confussion_max = confusion_matrix(data.Y_Test, self.model_prediction)
 
-        return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
+        #Print out the model matrics
+        print(
+            f"Model MLP Accuracy: {self.accuracy}\n",
+            f"Model MLP Precision: {self.precision}\n",
+            f"Model MLP Recall: {self.recall}\n",
+            f"Model MLP F1: {self.f1}\n",
+            f"Model MLP Confusion: {self.confussion_max}"
+        )

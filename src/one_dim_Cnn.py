@@ -1,3 +1,36 @@
+"""
+1D CNN code for one of our models for the classification models
+
+This is 1 dimensional CNN model that uses a sliding window to read
+and analyze the data.
+
+The pipeline for this specific file:
+-> Def model_name
+  1) First is the neural structure for the CNN
+  
+-> Def train_model()
+  1) The model is created in __init__() along with
+     the instances for the sliding window script and
+     parameters for the model.
+  2) The data is first scaled
+  3) It is then processed and seperated into a sliding window
+     format.
+  4) It is then transposed.
+  5) Runs the data into the model at epochs times.
+
+-> Def Predict()
+  1) Run the sliding window on the test data.
+  2) Transpose
+  3) Convert to tensor
+  4) Evaluate from the models
+  5) Run the models on the test data (changes it to numpy array)
+  6) Return the predications and Y_Test.
+
+-> Def Evaluate()
+  1) Get the scores for all metrics.
+  2) Print mertrics.
+"""
+
 #Import for abstract
 from drone_basics.abstracts import AbstractModel
 
@@ -45,7 +78,7 @@ class OneDimExecution(AbstractModel):
         self.epochs = epochs
 
     #Training section
-    def fit(self, data):
+    def train_model(self, data):
         #Scale and change dataset to a sliding window
         data.scale_data()
         self.x_window, self.y_window = (
@@ -119,4 +152,11 @@ class OneDimExecution(AbstractModel):
         self.f1 = f1_score(self.y_test_window, self.predications, average="weighted")
         self.confussion_max = confusion_matrix(self.y_test_window, self.predications)
 
-        return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
+        #Print out the model matrics
+        print(
+            f"\nModel 1D CNN Accuracy: {self.accuracy}\n",
+            f"Model 1D CNN Precision: {self.precision}\n",
+            f"Model 1D CNN Recall: {self.recall}\n",
+            f"Model 1D CNN F1: {self.f1}\n",
+            f"Model 1D CNN Confusion: {self.confussion_max}"
+        )
