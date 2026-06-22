@@ -4,7 +4,7 @@ svc.py
 
 This file implements the support vector classifier
 """
-from src.drone_basics.abstracts import AbstractModel
+from drone_basics.abstracts import AbstractModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -51,13 +51,24 @@ class SVCModel(AbstractModel):
         return self.model_prediction
 
     def evaluate(self, data):
-        """evaluate model predictions on the test set"""
-        
         self.accuracy= accuracy_score(data.Y_Test, self.model_prediction)
         self.precision = precision_score(data.Y_Test, self.model_prediction, average="weighted")
         self.recall = recall_score(data.Y_Test, self.model_prediction, average="weighted")
         self.f1 = f1_score(data.Y_Test, self.model_prediction, average="weighted")
         self.confussion_max = confusion_matrix(data.Y_Test, self.model_prediction)
+
+        print("\nSVC Model Evaluation:")
+        print(f"SVC Accuracy:  {self.accuracy}")
+        print(f"SVC Precision: {self.precision}")
+        print(f"SVC Recall:    {self.recall}")
+        print(f"SVC F1:        {self.f1}")
+        print(f"SVC Confusion Matrix:\n{self.confussion_max}")
+
+        # after performing normal evaluation, perform cross validation
+        self.scores = self.cross_validate(data)
+        print("\nCross Validation Scores:")
+        for metric in self.SCORING:
+            print(f"{metric} mean: {self.scores[f'{metric}_mean']} +/- {self.scores[f'{metric}_std']}")
 
         return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
 
