@@ -3,6 +3,8 @@ from drone_basics.models.lstm_model import LSTMExecution
 from drone_basics.models.mlp import MLPModel
 from drone_basics.models.one_dim_Cnn import OneDimExecution
 from drone_basics.models.xg_boost import XGBoostModel
+from drone_basics.models.svc import SVCModel
+from drone_basics.models.random_forest import RandomForestModel
 
 #import action types
 from drone_basics.execute_action import TrainAction, TestAction, EvaluateAction
@@ -14,6 +16,13 @@ class ModelFactory():
         #Avoids using if else and cases
         model_type = model_type.lower().strip()
         model_map = {
+            # svc
+            "svc" : lambda: SVCModel(),
+
+            # random forest
+            "rf" : lambda: RandomForestModel(),
+            "random forest" : lambda: RandomForestModel(),
+
             #XGBoost and every case
             "xgboost" : lambda: XGBoostModel(),
             "xg boost": lambda: XGBoostModel(),
