@@ -42,7 +42,7 @@ class SVCModel(AbstractModel):
         # Stratified K-Fold cross-validator
         self.skf = StratifiedKFold(n_splits = 5, shuffle = True, random_state = self.SEED)
     
-    def fit(self, data):
+    def train_model(self, data):
         # fit the model using the pipeline
         self.model_fit = self.pipeline.fit(data.X_Train, data.Y_Train)
     
