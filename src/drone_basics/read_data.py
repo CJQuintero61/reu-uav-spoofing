@@ -42,7 +42,7 @@ class ReadFlightData():
     def data_clean(self):
         columns_to_drop = []
         for col in self.dataset.columns:
-            if self.dataset[col].nunique() == 1:
+            if self.dataset[col].nunique() == 1 and col != 'label':
                 columns_to_drop.append(col)
                 print(f'Removing column {col}')
         
