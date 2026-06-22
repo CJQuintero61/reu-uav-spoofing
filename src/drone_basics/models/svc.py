@@ -19,13 +19,6 @@ class SVCModel(AbstractModel):
     NOTE: this model uses a pipeline to scale the data before fitting the SVC model.
     DO NOT call ReadFlightData.scale_data() before fitting this model, as the pipeline will
     handle scaling the data for each fold in the cross validation, and for the final fit and predict.
-
-    to use:
-        model = SVCModel()
-        model.fit(data)
-        model.predict(data)
-        model.evaluate(data)
-        model.cross_validate(data)
     """
     SEED = 0
     SCORING = ['accuracy', 'precision', 'recall', 'f1']
