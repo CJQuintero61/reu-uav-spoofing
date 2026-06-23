@@ -2,7 +2,7 @@
 
 from run_data_collection import ScenarioSelection, RunFlightHandler
 from autonomous_flight import DroneControl
-from spoof_attack import GPSConditionHandler
+# from spoof_attack import GPSConditionHandler
 from config_vars import spoofing_profiles
 
 """
@@ -36,7 +36,7 @@ class RunHandlers():
             spoof = spoofing_profiles
 
             self.run_flight = RunFlightHandler(drone_scenario)
-            self.spoof_hander = GPSConditionHandler()
+            #self.spoof_hander = GPSConditionHandler()
 
             #Create and save data and folders
             handler.create_folder()

@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 #import setup variables
-import data_collection_module.config_vars as variables
+import data_collection.config_vars as variables
 
 """
 This file is to run an autonomous flight sim of 30 flights.
