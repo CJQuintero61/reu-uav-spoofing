@@ -21,7 +21,7 @@ class SVCModel(AbstractModel):
     handle scaling the data for each fold in the cross validation, and for the final fit and predict.
     """
     SEED = 0
-    SCORING = ['accuracy', 'precision', 'recall', 'f1']
+    SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted']
 
     def __init__(self):
         super().__init__()
@@ -92,7 +92,7 @@ class SVCModel(AbstractModel):
         )
 
         for metric in self.SCORING:
-            scores[f'{metric}_mean'] = results[f'test_{metric}'].mean()
-            scores[f'{metric}_std'] = results[f'test_{metric}'].std()
+            scores[f'{metric}_mean'] = round((100 * results[f'test_{metric}'].mean()), 2)
+            scores[f'{metric}_std'] = round((100 * results[f'test_{metric}'].std()), 2)
 
         return scores
