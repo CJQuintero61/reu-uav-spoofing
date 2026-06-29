@@ -6,6 +6,12 @@ import asyncio
 
 #Math for flight pathers
 import math
+import data_collection_module.config_vars as variables
+
+"""
+Main flight control code to fly the drone autonomously.
+Handles all mission generation and px4 flight controls.
+"""
 
 class DroneControl():
     #initialize the drone and know the location, alt, and mission type
@@ -15,9 +21,13 @@ class DroneControl():
         self.altitude = altitude
         self.mission = mission
 
+    """
+------------- PX4 HELPERS -------------
+    """  
+
     #Connect
     async def connect_to_vehicle(self):
-       await self.drone.connect(system_address="udp://:14540")
+       await self.drone.connect(system_address="udpin://0.0.0.0:14540")
 
     #Wait for conenction
     async def wait_until_connected(self):
@@ -48,8 +58,10 @@ class DroneControl():
         await self.drone.action.land()
     
     #Upload/Start mission
-    async def upload_start_mission(self, mission_plan):
+    async def upload_mission(self, mission_plan):
         await self.drone.mission.upload_mission(mission_plan)
+        
+    async def start_mission(self):
         await self.drone.mission.start_mission()
 
     #Waits for the mission to be completed
@@ -58,10 +70,15 @@ class DroneControl():
             if progress.total > 0 and progress.current == progress.total:
                 break
     
+    """
+------------- GENERATE SQUARE MISSION -------------
+    """  
+        
     #Square mission
-    def generate_square_mission(self, variables, speed_m_s):
+    async def generate_square_mission(self, speed_m_s):
         #Square mission needs four points
         #dictory for waypoints
+        
         mission_map = {
             "tamu-cc": 
                     variables.waypoint_tamucc,
@@ -76,21 +93,35 @@ class DroneControl():
 
         mission_item = []
 
-        for coords in selected_location:
-            waypoint = MissionItem(
-                latitude_deg=coords["lat"],
-                longitude_deg=coords["long"],
-                relative_altitude_m=self.altitude,
-                speed_m_s=speed_m_s,
-                is_fly_through=True
-            )
+        for _ in range(30):
+            for coords in selected_location:
+                waypoint = MissionItem(
+                    latitude_deg=coords["lat"],
+                    longitude_deg=coords["long"],
+                    relative_altitude_m=self.altitude,
+                    speed_m_s=speed_m_s,
+                    is_fly_through=True,
+                    gimbal_pitch_deg=float("nan"),
+                    gimbal_yaw_deg=float("nan"),
+                    camera_action=MissionItem.CameraAction.NONE,
+                    loiter_time_s=0,
+                    camera_photo_interval_s=0,
+                    acceptance_radius_m=1,
+                    yaw_deg=float("nan"),
+                    camera_photo_distance_m=0,
+                    vehicle_action=MissionItem.VehicleAction.NONE
+                )
 
-            #Combined the list of coords from config_vars.py
-            mission_item.append(waypoint)
+                #Combined the list of coords from config_vars.py
+                mission_item.append(waypoint)
 
         #Returnt hat mission plan
         return MissionPlan(mission_item)
-    
+
+    """
+------------- GENERATE HOVER MISSION -------------
+    """  
+
     #Hover Mission
     async def fly_hover_mission(self, duration_sec):
         #Take off and hover for duration time
@@ -101,11 +132,14 @@ class DroneControl():
         #lands drone after the duration time
         await self.land_vehicle()
 
+    """
+------------- GENERATE CIRCLE MISSION -------------
+    """  
     #Circle Mission
-    def generate_circle_mission(self, center_lat,
+    async def generate_circle_mission(self, center_lat,
                                 center_long, radius_m,
                                 num_points, speed_m_s):
-        
+        circle_points = []
         mission_waypoints = []
 
         for i in range(num_points):
@@ -118,61 +152,101 @@ class DroneControl():
                                       east_offset / (111111 * math.cos(math.radians(center_lat))))
             new_lat = center_lat + (north_offset/111111)
 
+            #Sets the mission item in the loop for the circle
+            #for each 
             waypoint = MissionItem(
                 latitude_deg=new_lat,
                 longitude_deg=new_long,
                 relative_altitude_m=self.altitude,
                 speed_m_s=speed_m_s,
-                is_fly_through=True
+                is_fly_through=True,
+                gimbal_pitch_deg=float("nan"),
+                gimbal_yaw_deg=float("nan"),
+                camera_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=0,
+                camera_photo_interval_s=0,
+                acceptance_radius_m=1,
+                yaw_deg=float("nan"),
+                camera_photo_distance_m=0,
+                vehicle_action=MissionItem.VehicleAction.NONE
             )
+            
+            circle_points.append(waypoint)
 
-            mission_waypoints.append(waypoint)
+        #Loop to store 20 waypoints for missions.
+        for _ in range(30):
+            for waypoint in circle_points:
+                mission_waypoints.append(waypoint)
 
         return MissionPlan(mission_waypoints)
 
+    """
+------------- RUN MISSION -------------
+    """  
 
     #Selects the mission type
-    async def run_mission(self, location_type, duration_sec):
+    async def run_mission(self, duration_sec):
         #Calls hover
+        print("Selected mission:", self.mission)
         if self.mission == "hover":
-           await self.fly_hover_mission(duration_sec)
-        
+            await self.fly_hover_mission(duration_sec)
+
         #Preforms the square mission.
         #Got to four points starting form location
         elif self.mission == "square":
-            mission_plan = self.generate_square_mission(location_type, speed_m_s=5)
+            #Testing for time.
+            await self.drone.mission.clear_mission()
+
+            #Generate the mission and upload it
+            mission_plan = await self.generate_square_mission(speed_m_s=15)    
+            await self.upload_mission(mission_plan)
+
+            #Arm the drone and set or takeoff
             await self.arm_vehicle()
             await self.takeoff()
-            await self.upload_start_mission(mission_plan)
-            await self.wait_mission_complete()
+
+            #Start the mission and land adter duration_sec
+            await self.start_mission()
+            await asyncio.sleep(duration_sec)               
+
             await self.land_vehicle()
-        
+            await asyncio.sleep(10)
+
         #Perfroms the circle mission
         #From startpoint go to starting circle point and fly in circle
         elif self.mission == "circle":
             #Gets the location and the lat and long for the center.
             center = None
-            for location in location_type.locations:
+
+            for location in variables.locations:
                 if location["name"] == self.location:
                     center = location
                     break
-            
+
             #Fail safe in case no location is found.
             if center is None:
                 raise ValueError (f"Unknown location: {self.location}")
 
-            #main mission plan setup.
-            mission_plan = self.generate_circle_mission(
+            #Generate Mission
+            #Clear the first mission
+            await self.drone.mission.clear_mission()
+
+            mission_plan = await self.generate_circle_mission(
                 center_lat=center["lat"],
                 center_long=center["long"],
                 radius_m=25,
                 num_points=12,
-                speed_m_s=5
+                speed_m_s=15
             )
+            await self.upload_mission(mission_plan)
 
-            #Drone flight and landing system.
+            #Arm and ready for takeoff
             await self.arm_vehicle()
             await self.takeoff()
-            await self.upload_start_mission(mission_plan)
-            await self.wait_mission_complete()
+
+            #Start and land drone after duration_sec
+            await self.start_mission()     
+            await asyncio.sleep(duration_sec)
             await self.land_vehicle()
+            await asyncio.sleep(10)
+            

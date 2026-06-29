@@ -1,5 +1,8 @@
 from pathlib import Path
 
+"""
+Storage of dictories and lists and variables for easy access.
+"""
 #Set paths for data set and the px4
 dataset_path = Path("dataset")
 px4_dir = Path.home() / "PX4-autopilot"
@@ -47,36 +50,35 @@ locations = [
 
 #Add more if adding more altitude and locations
 altitude = [10, 30, 40, 50]
-wind_condition = ["none", "low", "moderate", "strong", "very strong"]
 mission_type = ["hover", "square", "circle"]
 gps_conditions = ["normal", "spoofed"] #Can add more types
 
 #Starting area TAMU-CC
 waypoint_tamucc = [
-    {"lat": 27.71351,"long":-97.32961},
-    {"lat": 27.69005,"long":-97.33524},
-    {"lat": 27.70592,"long":-97.36645},
-    {"lat": 27.72808,"long":-97.35170}
+    {"lat": 27.71030, "long": -97.31530},
+    {"lat": 27.71030, "long": -97.31430},
+    {"lat": 27.70930, "long": -97.31430},
+    {"lat": 27.70930, "long": -97.31530}
 ]
 #Starting area Corpus Christi downtown
 waypoint_downtown = [
-    {"lat": 27.80090,"long":-97.39637},
-    {"lat": 27.80390,"long":-97.46478},
-    {"lat": 27.76386,"long":-97.46770},
-    {"lat": 27.76697,"long":-97.38487}
+    {"lat": 27.80108, "long": -97.39688},
+    {"lat": 27.80108, "long": -97.39588},
+    {"lat": 27.80008, "long": -97.39588},
+    {"lat": 27.80008, "long": -97.39688}
 ]
 
 #Starting area Corpus Christi Airport
 waypoint_airport = [
-    {"lat": 27.77407,"long":-97.50225},
-    {"lat": 27.67169,"long":-97.50023},
-    {"lat": 27.67169,"long":-97.1922},
-    {"lat": 27.77504,"long":-97.41955}
+    {"lat": 27.77270, "long": -97.50290},
+    {"lat": 27.77270, "long": -97.50190},
+    {"lat": 27.77170, "long": -97.50190},
+    {"lat": 27.77170, "long": -97.50290}
 ]
 
 #Attack items
 spoofing_profiles = [
-    "constant_offset",
-    "slow_drift",
-    "sudden_jump"
+    "offset",
+    "drift",
+    "sudden jump"
 ]
