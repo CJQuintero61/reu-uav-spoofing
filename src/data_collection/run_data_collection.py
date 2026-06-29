@@ -5,16 +5,16 @@ import subprocess
 import signal
 from pathlib import Path
 from datetime import datetime
+import shutil
 
 #import setup variables
 import data_collection_module.config_vars as variables
 
 """
-This file is to run an autonomous flight sim of 30 flights.
+This file is to run an autonomous flight sim of n nuumber of flights.
 The goal is to have it be autonomous while storing the ulogs and 
   getting the ros2 information seperately. Getting specificly the 
-  gps only items from flight.
-
+  specific gps information from flight.
 """
 
 #Selects the scenarios from dictionary
@@ -26,10 +26,10 @@ class ScenarioSelection():
             "location": selected_location,
             "location name": selected_location["name"],
             "altitude": random.choice(variables.altitude),
-            "wind condition": random.choice(variables.wind_condition),
-            "gps condition": "normal", #random.choice(variables.gps_conditions),
+            "gps condition": random.choice(variables.gps_conditions),
             "mission type": random.choice(variables.mission_type),
-            "flight duration" : 600
+            "flight duration" : 600,
+            "spoof types" : random.choice(variables.spoofing_profiles)
         }
 
         return scenario
@@ -64,10 +64,16 @@ class RunFlightHandler():
         #Enviornment variables
         env = os.environ.copy()
         
-        #Sets the px4 location to the given location dictionary
+        #Sets the px4 location for this specific env.
         env["SIM_GZ_HOME_LAT"] = str(location["lat"])
         env["SIM_GZ_HOME_LON"] = str(location["long"])
-        env["SIM_GZ_HOME_ALT"] = str(location["alt"])
+        env["SIM_GZ_HOME_ALT"] = str(location["alt"])  
+
+        env["PX4_HOME_LAT"] = str(location["lat"])
+        env["PX4_HOME_LON"] = str(location["long"])
+        env["PX4_HOME_ALT"] = str(location["alt"])
+        
+        print("PX4 home set to:", location)
         
         command = ["make", "px4_sitl", "gz_x500"]
 
@@ -82,6 +88,10 @@ class RunFlightHandler():
     #Starts ros bag to collect data.
     def start_ros_bag(self):
         ros_bag_output = self.ros_bag / "flight_data"
+
+        #If the folder exists delete it
+        if ros_bag_output.exists():
+            shutil.rmtree(ros_bag_output)
 
         #To collect the bag, run this command
         command = [
