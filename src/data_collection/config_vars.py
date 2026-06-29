@@ -5,7 +5,7 @@ Storage of dictories and lists and variables for easy access.
 """
 #Set paths for data set and the px4
 dataset_path = Path("dataset")
-px4_dir = Path.home() / "PX4-autopilot"
+px4_dir = Path.home() / "PX4-Autopilot"
 
 px4_logs = (
     px4_dir

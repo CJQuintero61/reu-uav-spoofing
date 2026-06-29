@@ -6,7 +6,7 @@ import asyncio
 
 #Math for flight pathers
 import math
-import data_collection_module.config_vars as variables
+import config_vars as variables
 
 """
 Main flight control code to fly the drone autonomously.

@@ -1,7 +1,7 @@
 #import files
-from data_collection_module.run_data_collection import ScenarioSelection, RunFlightHandler
-from data_collection_module.autonomous_flight import DroneControl
-from data_collection_module.config_vars import spoofing_profiles
+from run_data_collection import ScenarioSelection, RunFlightHandler
+from autonomous_flight import DroneControl
+from config_vars import spoofing_profiles
 
 import asyncio
 import time

@@ -7,3 +7,10 @@ ipykernel
 xgboost
 torch
 mavsdk
+kconfiglib
+pyyaml
+jsonschema
+empy
+pyros-genmsg
+em
+empy==3.3.4

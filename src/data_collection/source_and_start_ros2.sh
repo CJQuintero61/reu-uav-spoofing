@@ -5,9 +5,9 @@
 #  but aren't anymore or need easy startup
 
 
-cd ~/ros2_drone_ws/src/drone_basics || exit 1
+cd /mnt/c/Users/cjqui/VSC_Workspaces/reu-uav-spoofing/src/drone_basics || exit 1
 
-source .venv/bin/activate
+source ~/.venv/bin/activate
 
 which python3
 
