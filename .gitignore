@@ -5,5 +5,5 @@ venv
 # ignore pycache
 __pycache__/
 
-# ignore non-merged csv files
-data/csv/
+# ignore the fully merged dataset
+data/all_run_datasets.csv
