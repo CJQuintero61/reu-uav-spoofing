@@ -380,10 +380,13 @@ class ReadAndConvert():
     def convert_ros2_csv(self, lat_meters, long_meters, drift, jump,
                          attack_start, attack_end):
         #Get director to us across different file directory formats
-
         #Collect data
         collected_data = self.collect_flight_data()
         print(f"\n-------- Collected Data --------")
+
+        #List to merge all the merged files together for 
+        #final merge
+        all_runs = []
 
         #Created folder
         self.create_folder()
@@ -413,8 +416,17 @@ class ReadAndConvert():
             print(f"\n-------- Saved Merged Items --------")
             self.save_merged_csv(merged, created_csv["merged"])
 
+            #Add each row indiviualy in this list
+            print(f"\n-------- Adding Row to List from Merged CSVs --------")
+            all_runs.extend(merged)
+        
+        #Merges all the merged runs into one CSV
+        print(f"\n-------- Saved All Runs Together in CSV --------")
+        all_merged_datasets = self.run_folder / "all_run_folder" / "all_run_datasets.csv"
+        self.save_merged_csv(all_runs, all_merged_datasets)
+
         print(f"\n-------- Finished --------")
-            
+
 """
 ------------- CLIENT HANDLER -------------
 """    
