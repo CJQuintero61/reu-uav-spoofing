@@ -21,16 +21,37 @@ The goal is to have it be autonomous while storing the ulogs and
 class ScenarioSelection():
     def create(self, run_id):
         selected_location = random.choice(variables.locations)
-        scenario = {
-            "run id": run_id,
-            "location": selected_location,
-            "location name": selected_location["name"],
-            "altitude": random.choice(variables.altitude),
-            "gps condition": random.choice(variables.gps_conditions),
-            "mission type": random.choice(variables.mission_type),
-            "flight duration" : 600,
-            "spoof types" : random.choice(variables.spoofing_profiles)
-        }
+
+        # get the run id without the "run_" prefix
+        id = run_id.strip("run_")
+        id = int(id)  # convert to integer
+
+        print(f"\n-------- Run ID for spoofing: {id} --------")
+
+        if id % 5 == 0:
+            # Every 5th run, select a spoofing profile
+            scenario = {
+                "run id": run_id,
+                "location": selected_location,
+                "location name": selected_location["name"],
+                "altitude": random.choice(variables.altitude),
+                "gps condition": "spoofed",
+                "mission type": random.choice(variables.mission_type),
+                "flight duration" : 600,
+                "spoof types" : random.choice(variables.spoofing_profiles)
+            }
+        else:
+            # For other runs, select a normal GPS condition
+            scenario = {
+                "run id": run_id,
+                "location": selected_location,
+                "location name": selected_location["name"],
+                "altitude": random.choice(variables.altitude),
+                "gps condition": "normal",
+                "mission type": random.choice(variables.mission_type),
+                "flight duration" : 600,
+                "spoof types" : random.choice(variables.spoofing_profiles)
+            }
 
         return scenario
     

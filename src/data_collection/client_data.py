@@ -147,7 +147,7 @@ class RunHandlers():
 #Runs n number amounts of flights using runner.run(n)
 async def main_client():
     runner = RunHandlers()
-    await runner.run(2)
+    await runner.run(30)
 
 #In this specfic file runs the main client function
 if __name__ == "__main__":
