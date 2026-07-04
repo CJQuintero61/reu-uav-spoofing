@@ -97,12 +97,14 @@ class RunHandlers():
             handler.create_folder()
             handler.save_data()
             print("\n-------- Successfully Created Dataset Folders --------")
+            handler.kill_mavsdk_server()
+            await asyncio.sleep(5)  # Wait for 5 seconds before starting the next flight
 
             print("\n-------- Started PX4 and Gazebo --------")
             px4_handler = handler.start_px4_gazebo()
 
             #Waits for 10 seconds and checks to see if PX4 fails.
-            time.sleep(10)
+            await asyncio.sleep(10)
             if px4_handler.poll() is not None:
                 print("\n-------- PX4 failed to start --------")
                 return
@@ -139,9 +141,9 @@ class RunHandlers():
             handler.stop_ros_process(ros2_bag_handler)
             handler.copy_ulog()
             handler.stop_px4_process(px4_handler)
-            
-            await asyncio.sleep(20)
+            handler.kill_mavsdk_server()
 
+            await asyncio.sleep(20)
             print("\n-------- All Processes stopped please check data --------")
 
 #Runs n number amounts of flights using runner.run(n)

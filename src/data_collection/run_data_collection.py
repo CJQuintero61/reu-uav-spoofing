@@ -161,3 +161,18 @@ class RunFlightHandler():
             process.wait(timeout=10)
         except:
             os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+    
+    # Kill any leftover mavsdk_server processes and reap zombies
+    def kill_mavsdk_server(self):
+        subprocess.run(["pkill", "-9", "-f", "mavsdk_server"], check=False)
+        subprocess.run(["fuser", "-k", "50051/tcp"], check=False)
+        subprocess.run(["fuser", "-k", "14540/udp"], check=False)
+
+        # Reap any zombie children still attached to this process
+        try:
+            while True:
+                pid, status = os.waitpid(-1, os.WNOHANG)
+                if pid == 0:
+                    break
+        except ChildProcessError:
+            pass
