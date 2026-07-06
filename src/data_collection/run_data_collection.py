@@ -30,6 +30,7 @@ class ScenarioSelection():
 
         if id % 5 == 0:
             # Every 5th run, select a spoofing profile
+            print(f"\n-------- Running SPOOFED mission --------")
             scenario = {
                 "run id": run_id,
                 "location": selected_location,
@@ -42,6 +43,7 @@ class ScenarioSelection():
             }
         else:
             # For other runs, select a normal GPS condition
+            print(f"\n-------- Running NORMAL mission --------")
             scenario = {
                 "run id": run_id,
                 "location": selected_location,

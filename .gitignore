@@ -7,3 +7,7 @@ __pycache__/
 
 # ignore the fully merged dataset
 data/all_run_datasets.csv
+
+src/data_collection/dataset
+
+src/data_collection/dataset.zip
