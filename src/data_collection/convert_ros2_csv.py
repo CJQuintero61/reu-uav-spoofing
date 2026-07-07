@@ -341,7 +341,6 @@ class ReadAndConvert():
                 "location name": metadata.loc[0,"scenario.location name"],
                 "lat": metadata.loc[0,"scenario.location.lat"],
                 "long": metadata.loc[0,"scenario.location.long"],
-                "wind condition": metadata.loc[0,"scenario.wind condition"],
                 "label": metadata.loc[0,"label"],
                 "gps condition": metadata.loc[0,"scenario.gps condition"],
                 "mission type": metadata.loc[0,"scenario.mission type"],
@@ -387,6 +386,8 @@ class ReadAndConvert():
         #Read and start conversion
         print(f"\n-------- Starting Read on Ros Bag --------")
         for mcap in collected_data:
+
+            self.j_son = mcap.parent.parent.parent / "metadata.json"
             ros_bag = self.read_bag(mcap)
             print(f"\n-------- Starting Create CSV --------")
             created_csv = self.create_csv(mcap, ros_bag)
@@ -422,9 +423,9 @@ def client(source_dir, csv_destination, j_son,
 if __name__ == "__main__":
 
     #Change with your file path
-    source = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset")
-    destination = Path("/home/mudsk/ros_csv")
-    j_son = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset/run_001/metadata.json")
+    source = Path("./dataset")
+    destination = Path("./merged_data")
+    j_son = Path("./")
     client_test = client(source, destination, j_son,
                          lat_meters=10, long_meters=15,
                          drift=5, jump=10,
