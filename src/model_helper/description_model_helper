@@ -1,0 +1,3 @@
+Folder contain all the model helpers.
+  This includes:
+    abstracts, actions, read_data, windowing, etc.
