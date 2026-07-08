@@ -2,6 +2,7 @@ import sys
 import time
 import pickle
 import pandas as pd
+import itertools
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -12,47 +13,29 @@ TEST_SIZE = 0.20
 SEED = 0
 ROUND_PRECISION = 4
 SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
+
+
+C_VALUES = [0.1, 1, 10]
+GAMMA_VALUES = ['scale', 0.1]
+
+"""
+create a list of parameter combinations for the SVC model
+
+there should be 6 combinations: 3 C values * 2 gamma values
+all combinations will use the 'rbf' kernel and 'balanced' class_weights
+"""
 PARAMS = [
     {
-        'id': 1,
+        'id': i,
         'kernel': 'rbf',
         'class_weight': 'balanced',
-    },
-    {
-        'id': 2,
-        'kernel': 'rbf',
-        'class_weight': None,
-    },
-    {
-        'id': 3,
-        'kernel': 'sigmoid',
-        'class_weight': 'balanced',
-    },
-    {
-        'id': 4,
-        'kernel': 'sigmoid',
-        'class_weight': None,
-    },
-    {
-        'id': 5,
-        'kernel': 'linear',
-        'class_weight': 'balanced',
-    },
-    {
-        'id': 6,
-        'kernel': 'linear',
-        'class_weight': None,
-    },
-    {
-        'id': 7,
-        'kernel': 'poly',
-        'class_weight': 'balanced',
-    },
-    {
-        'id': 8,
-        'kernel': 'poly',
-        'class_weight': None,
+        'C': C,
+        'gamma': gamma,
     }
+    for i, (C, gamma) in enumerate(
+        itertools.product(C_VALUES, GAMMA_VALUES),
+        start=1
+    )
 ]
 
 """if using colab"""
@@ -160,11 +143,18 @@ class SVCModel():
     handle scaling the data for each fold in the cross validation, and for the final fit and predict.
     """
 
-    def __init__(self, kernel='rbf', class_weight='balanced', random_state=SEED):
+    def __init__(self, kernel='rbf', class_weight='balanced', C=1.0, gamma='scale', random_state=SEED):
+        
         # pipeline for scaling and SVC model
         self.pipeline = Pipeline([
             ('scaler', StandardScaler()),
-            ('svc', SVC(kernel = kernel, class_weight = class_weight, random_state = random_state))
+            ('svc', SVC(
+                kernel = kernel,
+                class_weight = class_weight,
+                C = C,
+                gamma = gamma,
+                random_state = random_state
+            ))
         ])
 
         # Stratified K-Fold cross-validator
@@ -264,9 +254,13 @@ class Tee:
 
 
 if __name__ == "__main__":
+    # data file to read
     file = '../../../data/imbalanced_data_80_20.csv'
-    output = '../../../data/svc_model_results.txt'
-    summary_csv = '../../../data/svc_model_summary.csv'
+
+    # change the imbalance ratio when using different datasets
+    output_base = '../../../data/svc_model_80_20'
+    output = f'{output_base}_results.txt'
+    summary_csv = f'{output_base}_summary.csv'
 
     original_stdout = sys.stdout
     results = []  # will hold one dict per parameter combo
@@ -299,13 +293,30 @@ if __name__ == "__main__":
             print(f'Training set label distribution:\n{data.Y_Train.value_counts(normalize=True)}\n')
             print(f'Testing set label distribution:\n{data.Y_Test.value_counts(normalize=True)}\n')
 
-            for param in PARAMS:
+            for idx, param in enumerate(PARAMS):
+                print(f"\n----------------------------------------------------------------\n")
+                print(f"\nRunning parameter combination {idx + 1}/{len(PARAMS)}")
                 print(f"\n----- Training SVC model with parameters: {param} -----")
 
-                svc = SVCModel(kernel=param['kernel'], class_weight=param['class_weight'])
+                svc = SVCModel(
+                    kernel=param['kernel'],
+                    class_weight=param['class_weight'],
+                    C=param['C'],
+                    gamma=param['gamma'],
+                )
+
+                print(f'\nBegin training at {time.strftime("%H:%M:%S", time.localtime())}')
                 svc.train_model(data)
+                print('Training complete\n')
+
+                print(f'Begin cross-validation at {time.strftime("%H:%M:%S", time.localtime())}')
                 svc.cross_validate(data)
+                print('Cross-validation complete\n')
+
+                print(f'Begin prediction at {time.strftime("%H:%M:%S", time.localtime())}')
                 svc.predict(data)
+                print('Prediction complete\n')
+
                 svc.evaluate(data)
                 svc.print_model_info()
                 print(f"\n----------------------------------------------------------------\n")
@@ -315,6 +326,8 @@ if __name__ == "__main__":
                     'id': param['id'],
                     'kernel': param['kernel'],
                     'class_weight': param['class_weight'],
+                    'C': param['C'],
+                    'gamma': param['gamma'],
                     'accuracy': round(svc.accuracy, ROUND_PRECISION),
                     'precision': round(svc.precision, ROUND_PRECISION),
                     'recall': round(svc.recall, ROUND_PRECISION),
