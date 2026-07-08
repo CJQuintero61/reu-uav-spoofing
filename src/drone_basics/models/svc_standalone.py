@@ -1,4 +1,4 @@
-import os
+import sys
 import time
 import pickle
 import pandas as pd
@@ -12,6 +12,48 @@ TEST_SIZE = 0.20
 SEED = 0
 ROUND_PRECISION = 4
 SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
+PARAMS = [
+    {
+        'id': 1,
+        'kernel': 'rbf',
+        'class_weight': 'balanced',
+    },
+    {
+        'id': 2,
+        'kernel': 'rbf',
+        'class_weight': None,
+    },
+    {
+        'id': 3,
+        'kernel': 'sigmoid',
+        'class_weight': 'balanced',
+    },
+    {
+        'id': 4,
+        'kernel': 'sigmoid',
+        'class_weight': None,
+    },
+    {
+        'id': 5,
+        'kernel': 'linear',
+        'class_weight': 'balanced',
+    },
+    {
+        'id': 6,
+        'kernel': 'linear',
+        'class_weight': None,
+    },
+    {
+        'id': 7,
+        'kernel': 'poly',
+        'class_weight': 'balanced',
+    },
+    {
+        'id': 8,
+        'kernel': 'poly',
+        'class_weight': None,
+    }
+]
 
 """if using colab"""
 # from google.colab import drive
@@ -19,74 +61,94 @@ SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', '
 # file = '/content/drive/MyDrive/all_run_datasets.csv'
 
 
-file = '../../../data/all_run_datasets.csv'
-dataset = pd.read_csv(file)
-
-nan_count = dataset.isnull().sum().sum()
-assert nan_count == 0, "NaNs were found in the data"
-
-# Cleans the data by removing the unnecessary columns from data.
-def data_clean():
-    columns_to_drop = []
-    
-    for col in dataset.columns:
-        # remove columns that have only 1 unique value
-        if dataset[col].nunique() == 1 and col != 'label':
-            columns_to_drop.append(col)
-            print(f'Removing column {col}: constant column')
-            
-        # remove columns that have string values
-        if isinstance(dataset[col][1], str) and col != 'label':
-            columns_to_drop.append(col)
-            print(f'Removing column {col}: string column')
-
-    # Drops these items from the dataset
-    dataset.drop(columns=columns_to_drop, inplace=True)
-    print(f'Removed {len(columns_to_drop)} columns')
-
-    # Remove special symbols from colums
-    # Remove the [], _, and <
-    dataset.columns = (
-        dataset.columns
-        .str.replace("[", "_", regex=False)
-        .str.replace("]", "_", regex=False)
-        .str.replace("<", "_", regex=False)
-    )
-
-# cleans the data inplace
-data_clean()
-
-# split the data where:
-# y = 0 for real, 1 for spoof/malicious
-# x drops the columns label and saves the features.
-def split_random_data():
-    y = dataset['label']
-    x = dataset.drop(columns=['label'])
-
-    assert 'gps condition' not in x.columns, "gps condition was not dropped successfully"
-    assert 'label' not in x.columns, "label was not dropped successfully"
-
-    X_Train, X_Test, Y_Train, Y_Test = train_test_split(
-        x,
-        y,
-        test_size=TEST_SIZE,
-        shuffle=True,
-        random_state=SEED,
-        stratify = y
-    )
-
-    return X_Train, X_Test, Y_Train, Y_Test
-
-X_Train, X_Test, Y_Train, Y_Test = split_random_data()
-
 class Data():
-    def __init__(self, X_Train, X_Test, Y_Train, Y_Test):
+    """
+    This data class reads and prepares the data for training and testing a model.
+    """
+    def __init__(self, file):
+        """
+        Args:
+            file (str): path to the dataset CSV file
+        """
+        self.X_Train = None
+        self.X_Test = None
+        self.Y_Train = None
+        self.Y_Test = None
+        self.dataset = None
+        self.file = file
+    
+
+    def read_file(self):
+        """
+        reads the file and checks for NaNs and ensures the dataset is a pandas DataFrame
+        """
+        self.dataset = pd.read_csv(self.file)
+        assert isinstance(self.dataset, pd.DataFrame), "dataset is not a pandas DataFrame"
+
+        nan_count = self.dataset.isnull().sum().sum()
+        assert nan_count == 0, "NaNs were found in the data"
+    
+
+    def data_clean(self):
+        """
+        cleans the data by removing unnecessary columns and special characters from column names
+        """
+        columns_to_drop = []
+
+        # removes columns that only have 1 unique value
+        for col in self.dataset.columns:
+            if self.dataset[col].nunique() == 1 and col != 'label':
+                columns_to_drop.append(col)
+                print(f'Removing column {col}: constant column')
+        
+        #drop timestamp as well.
+        columns_to_drop.append('gps_timestamp')
+        print('Removing column timestamp')
+
+        #Drops these items from the dataset
+        self.dataset.drop(columns=columns_to_drop, inplace=True)
+        print(f'Removed {len(columns_to_drop)} columns')
+
+        #Remove special symbols from colums
+        #Remove the [], _, and <
+        self.dataset.columns = (
+            self.dataset.columns
+            .str.replace("[", "_", regex=False)
+            .str.replace("]", "_", regex=False)
+            .str.replace("<", "_", regex=False)
+        )
+
+
+    def split_random_data(self):
+        """
+        splits the data into training and testing sets
+
+        y = 0 for normal, 1 for spoof/malicious
+        x drops the columns label and saves the features.
+        """
+        y = self.dataset['label']
+        x = self.dataset.drop(columns=['label', 'gps condition',
+                                       'run id', 'mission type',
+                                       'location name'])
+
+        print(f'Dropping: {["label", "gps condition", "run id", "mission type", "location name"]} from Training/Testing sets')
+
+        assert 'gps condition' not in x.columns, "gps condition was not dropped successfully"
+        assert 'label' not in x.columns, "label was not dropped successfully"
+
+        X_Train, X_Test, Y_Train, Y_Test = train_test_split(
+            x,
+            y,
+            test_size=TEST_SIZE,
+            shuffle=True,
+            random_state=SEED,
+            stratify = y
+        )
+
         self.X_Train = X_Train
         self.X_Test = X_Test
         self.Y_Train = Y_Train
         self.Y_Test = Y_Test
-
-data = Data(X_Train, X_Test, Y_Train, Y_Test)
 
 
 class SVCModel():
@@ -98,11 +160,11 @@ class SVCModel():
     handle scaling the data for each fold in the cross validation, and for the final fit and predict.
     """
 
-    def __init__(self):
+    def __init__(self, kernel='rbf', class_weight='balanced', random_state=SEED):
         # pipeline for scaling and SVC model
         self.pipeline = Pipeline([
             ('scaler', StandardScaler()),
-            ('svc', SVC(kernel = 'rbf', class_weight = 'balanced', random_state = SEED))
+            ('svc', SVC(kernel = kernel, class_weight = class_weight, random_state = random_state))
         ])
 
         # Stratified K-Fold cross-validator
@@ -134,7 +196,6 @@ class SVCModel():
 
         
         self._set_model_size()
-        self.print_model_info()
         
         return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
 
@@ -185,23 +246,98 @@ class SVCModel():
             print(f"{metric} mean: {round(self.cv_scores[f'{metric}_mean'], ROUND_PRECISION)}")
             print(f"{metric} std:  {round(self.cv_scores[f'{metric}_std'], ROUND_PRECISION)}\n")
 
-svc = SVCModel()
+class Tee:
+    """
+    Writes everything to both the terminal and a file at once
+    """
+    def __init__(self, *streams):
+        self.streams = streams
 
-print('starting model training')
-svc.train_model(data)
-print('model training complete')
+    def write(self, data):
+        for stream in self.streams:
+            stream.write(data)
+            stream.flush()
 
-print('starting cross validation')
-svc.cross_validate(data)
-print('cross validation complete')
-
-print('starting model prediction')
-svc.predict(data)
-print('model prediction complete')
-
-print('starting model evaluation')
-svc.evaluate(data)
-print('model evaluation complete\n')
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
 
 
-svc.print_model_info()
+if __name__ == "__main__":
+    file = '../../../data/imbalanced_data_80_20.csv'
+    output = '../../../data/svc_model_results.txt'
+    summary_csv = '../../../data/svc_model_summary.csv'
+
+    original_stdout = sys.stdout
+    results = []  # will hold one dict per parameter combo
+
+    with open(output, 'w') as f:
+        sys.stdout = Tee(original_stdout, f)
+
+        try:
+            # set up the data
+            data = Data(file)
+            data.read_file()
+            data.data_clean()
+            data.split_random_data()
+
+            print('\n----- Data Stats -----')
+            print(f'Data shape: {data.dataset.shape}')
+            print(f'Normal label count: {data.dataset["label"].value_counts()[0]}')
+            print(f'Spoof label count: {data.dataset["label"].value_counts()[1]}')
+            print(f'\nData columns: {data.dataset.columns}\n')
+            print(f'Training set shape: {data.X_Train.shape}')
+            print(f'Testing set shape: {data.X_Test.shape}')
+
+            for col in data.X_Train.columns:
+                assert col in data.X_Test.columns, f"Column {col} exists in Training set but not in Testing set"
+            for col in data.X_Test.columns:
+                assert col in data.X_Train.columns, f"Column {col} exists in Testing set but not in Training set"
+            assert data.X_Train.shape[1] == data.X_Test.shape[1], "Training and Testing sets have different number of features"
+
+            print(f'\nTraining/Testing set columns: {data.X_Train.columns}\n')
+            print(f'Training set label distribution:\n{data.Y_Train.value_counts(normalize=True)}\n')
+            print(f'Testing set label distribution:\n{data.Y_Test.value_counts(normalize=True)}\n')
+
+            for param in PARAMS:
+                print(f"\n----- Training SVC model with parameters: {param} -----")
+
+                svc = SVCModel(kernel=param['kernel'], class_weight=param['class_weight'])
+                svc.train_model(data)
+                svc.cross_validate(data)
+                svc.predict(data)
+                svc.evaluate(data)
+                svc.print_model_info()
+                print(f"\n----------------------------------------------------------------\n")
+
+                # collect this run's results into a flat dict for the summary CSV
+                row = {
+                    'id': param['id'],
+                    'kernel': param['kernel'],
+                    'class_weight': param['class_weight'],
+                    'accuracy': round(svc.accuracy, ROUND_PRECISION),
+                    'precision': round(svc.precision, ROUND_PRECISION),
+                    'recall': round(svc.recall, ROUND_PRECISION),
+                    'f1': round(svc.f1, ROUND_PRECISION),
+                    'mcc': round(svc.mcc, ROUND_PRECISION),
+                    'model_size_kb': round(svc.model_size_kb, ROUND_PRECISION),
+                    'train_time_s': round(svc.train_time, ROUND_PRECISION),
+                    'predict_time_s': round(svc.predict_time, ROUND_PRECISION),
+                }
+                # add the cross-validation mean/std for each metric too
+                for metric in SCORING:
+                    row[f'cv_{metric}_mean'] = round(svc.cv_scores[f'{metric}_mean'], ROUND_PRECISION)
+                    row[f'cv_{metric}_std'] = round(svc.cv_scores[f'{metric}_std'], ROUND_PRECISION)
+
+                results.append(row)
+
+        finally:
+            sys.stdout = original_stdout
+
+    # build the summary DataFrame, sort by MCC (best first), and save
+    summary_df = pd.DataFrame(results)
+    summary_df.sort_values(by='mcc', ascending=False, inplace=True)
+    summary_df.to_csv(summary_csv, index=False)
+
+    print(f"\nSummary written to {summary_csv}")
+    print(summary_df)

@@ -463,12 +463,13 @@ def client(source_dir, csv_destination,
            drift, jump,
            attack_start, attack_end):
     read_folders = ReadAndConvert(source_dir, csv_destination)
-    # read_folders.convert_ros2_csv(lat_meters=lat_meters, long_meters=long_meters,
-    #                             drift=drift, jump=jump,
-    #                              attack_start=attack_start, attack_end=attack_end)
+    read_folders.convert_ros2_csv(lat_meters=lat_meters, long_meters=long_meters,
+                                 drift=drift, jump=jump,
+                                  attack_start=attack_start, attack_end=attack_end)
 
-    # read_folders.merge_all_runs()
+    read_folders.merge_all_runs()
 
+    '''
     df = pd.DataFrame()
     df = pd.read_csv('./merged_data/run_csv/all_run_datasets.csv')
 
@@ -479,6 +480,7 @@ def client(source_dir, csv_destination,
     print(f'\n-------- Final Merged DF Columns: {df.columns} --------')
     print(f'\n-------- Spoofed Count: {num_1s} --------')
     print(f'\n-------- Normal Count: {num_0s} --------')
+    '''
 
 
 """
