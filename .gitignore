@@ -11,3 +11,5 @@ data/all_run_datasets.csv
 src/data_collection/dataset
 
 src/data_collection/dataset.zip
+
+src/data_collection/merged_data
