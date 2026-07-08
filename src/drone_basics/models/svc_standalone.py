@@ -1,42 +1,88 @@
-import sys
+"""
+svc_standalone.py
+
+This script is a standalone implementation of the SVC model
+
+To run:
+    choose dataset file by updating the FILE constant
+    choose a parameter combination from the PARAMS list by updating the param variable
+
+    python <filename>.py
+"""
 import time
 import pickle
 import pandas as pd
-import itertools
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, matthews_corrcoef
 
+# testing and metric constants
 TEST_SIZE = 0.20
 SEED = 0
 ROUND_PRECISION = 4
 SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
 
 
-C_VALUES = [0.1, 1, 10]
-GAMMA_VALUES = ['scale', 0.1]
+# Change this to update dataset and parameter combination
+FILE = '../../../data/imbalanced_data_80_20.csv'
+PARAM_ID = 0
+
 
 """
-create a list of parameter combinations for the SVC model
+6 different parameter combinations to test from 3 C values and 3 gamma values
 
-there should be 6 combinations: 3 C values * 2 gamma values
-all combinations will use the 'rbf' kernel and 'balanced' class_weights
+C values [0.1, 1, 10]
+gamma values ['scale', 0.1]
+
+all tests use rbf and balanced weights
 """
 PARAMS = [
     {
-        'id': i,
+        'id': 0,
         'kernel': 'rbf',
         'class_weight': 'balanced',
-        'C': C,
-        'gamma': gamma,
+        'C': 0.1,
+        'gamma': 'scale'
+    },
+    {
+        'id': 1,
+        'kernel': 'rbf',
+        'class_weight': 'balanced',
+        'C': 0.1,
+        'gamma': 0.1
+    },
+    {
+        'id': 2,
+        'kernel': 'rbf',
+        'class_weight': 'balanced',
+        'C': 1,
+        'gamma': 'scale'
+    },
+    {
+        'id': 3,
+        'kernel': 'rbf',
+        'class_weight': 'balanced',
+        'C': 1,
+        'gamma': 0.1
+    },
+    {
+        'id': 4,
+        'kernel': 'rbf',
+        'class_weight': 'balanced',
+        'C': 10,
+        'gamma': 'scale'
+    },
+    {
+        'id': 5,
+        'kernel': 'rbf',
+        'class_weight': 'balanced',
+        'C': 10,
+        'gamma': 0.1
     }
-    for i, (C, gamma) in enumerate(
-        itertools.product(C_VALUES, GAMMA_VALUES),
-        start=1
-    )
 ]
+
 
 """if using colab"""
 # from google.colab import drive
@@ -254,103 +300,56 @@ class Tee:
 
 
 if __name__ == "__main__":
-    # data file to read
-    file = '../../../data/imbalanced_data_80_20.csv'
+    
+    param = PARAMS[PARAM_ID]
 
-    # change the imbalance ratio when using different datasets
-    output_base = '../../../data/svc_model_80_20'
-    output = f'{output_base}_results.txt'
-    summary_csv = f'{output_base}_summary.csv'
+    # set up the data
+    data = Data(FILE)
+    data.read_file()
+    data.data_clean()
+    data.split_random_data()
 
-    original_stdout = sys.stdout
-    results = []  # will hold one dict per parameter combo
+    print('\n----- Data Stats -----')
+    print(f'Data shape: {data.dataset.shape}')
+    print(f'Normal label count: {data.dataset["label"].value_counts()[0]}')
+    print(f'Spoof label count: {data.dataset["label"].value_counts()[1]}')
+    print(f'\nData columns: {data.dataset.columns}\n')
+    print(f'Training set shape: {data.X_Train.shape}')
+    print(f'Testing set shape: {data.X_Test.shape}')
 
-    with open(output, 'w') as f:
-        sys.stdout = Tee(original_stdout, f)
+    for col in data.X_Train.columns:
+        assert col in data.X_Test.columns, f"Column {col} exists in Training set but not in Testing set"
+    
+    for col in data.X_Test.columns:
+        assert col in data.X_Train.columns, f"Column {col} exists in Testing set but not in Training set"
+    
+    assert data.X_Train.shape[1] == data.X_Test.shape[1], "Training and Testing sets have different number of features"
 
-        try:
-            # set up the data
-            data = Data(file)
-            data.read_file()
-            data.data_clean()
-            data.split_random_data()
+    print(f'\nTraining/Testing set columns: {data.X_Train.columns}\n')
+    print(f'Training set label distribution:\n{data.Y_Train.value_counts(normalize=True)}\n')
+    print(f'Testing set label distribution:\n{data.Y_Test.value_counts(normalize=True)}\n')
 
-            print('\n----- Data Stats -----')
-            print(f'Data shape: {data.dataset.shape}')
-            print(f'Normal label count: {data.dataset["label"].value_counts()[0]}')
-            print(f'Spoof label count: {data.dataset["label"].value_counts()[1]}')
-            print(f'\nData columns: {data.dataset.columns}\n')
-            print(f'Training set shape: {data.X_Train.shape}')
-            print(f'Testing set shape: {data.X_Test.shape}')
+    print(f"\n----- Training SVC model with parameters: {param} -----")
 
-            for col in data.X_Train.columns:
-                assert col in data.X_Test.columns, f"Column {col} exists in Training set but not in Testing set"
-            for col in data.X_Test.columns:
-                assert col in data.X_Train.columns, f"Column {col} exists in Testing set but not in Training set"
-            assert data.X_Train.shape[1] == data.X_Test.shape[1], "Training and Testing sets have different number of features"
+    svc = SVCModel(
+        kernel=param['kernel'],
+        class_weight=param['class_weight'],
+        C=param['C'],
+        gamma=param['gamma'],
+    )
 
-            print(f'\nTraining/Testing set columns: {data.X_Train.columns}\n')
-            print(f'Training set label distribution:\n{data.Y_Train.value_counts(normalize=True)}\n')
-            print(f'Testing set label distribution:\n{data.Y_Test.value_counts(normalize=True)}\n')
+    print(f'\nBegin training at {time.strftime("%H:%M:%S", time.localtime())}')
+    svc.train_model(data)
+    print('Training complete\n')
 
-            for idx, param in enumerate(PARAMS):
-                print(f"\n----------------------------------------------------------------\n")
-                print(f"\nRunning parameter combination {idx + 1}/{len(PARAMS)}")
-                print(f"\n----- Training SVC model with parameters: {param} -----")
+    print(f'Begin cross-validation at {time.strftime("%H:%M:%S", time.localtime())}')
+    svc.cross_validate(data)
+    print('Cross-validation complete\n')
 
-                svc = SVCModel(
-                    kernel=param['kernel'],
-                    class_weight=param['class_weight'],
-                    C=param['C'],
-                    gamma=param['gamma'],
-                )
+    print(f'Begin prediction at {time.strftime("%H:%M:%S", time.localtime())}')
+    svc.predict(data)
+    print('Prediction complete\n')
 
-                print(f'\nBegin training at {time.strftime("%H:%M:%S", time.localtime())}')
-                svc.train_model(data)
-                print('Training complete\n')
-
-                print(f'Begin cross-validation at {time.strftime("%H:%M:%S", time.localtime())}')
-                svc.cross_validate(data)
-                print('Cross-validation complete\n')
-
-                print(f'Begin prediction at {time.strftime("%H:%M:%S", time.localtime())}')
-                svc.predict(data)
-                print('Prediction complete\n')
-
-                svc.evaluate(data)
-                svc.print_model_info()
-                print(f"\n----------------------------------------------------------------\n")
-
-                # collect this run's results into a flat dict for the summary CSV
-                row = {
-                    'id': param['id'],
-                    'kernel': param['kernel'],
-                    'class_weight': param['class_weight'],
-                    'C': param['C'],
-                    'gamma': param['gamma'],
-                    'accuracy': round(svc.accuracy, ROUND_PRECISION),
-                    'precision': round(svc.precision, ROUND_PRECISION),
-                    'recall': round(svc.recall, ROUND_PRECISION),
-                    'f1': round(svc.f1, ROUND_PRECISION),
-                    'mcc': round(svc.mcc, ROUND_PRECISION),
-                    'model_size_kb': round(svc.model_size_kb, ROUND_PRECISION),
-                    'train_time_s': round(svc.train_time, ROUND_PRECISION),
-                    'predict_time_s': round(svc.predict_time, ROUND_PRECISION),
-                }
-                # add the cross-validation mean/std for each metric too
-                for metric in SCORING:
-                    row[f'cv_{metric}_mean'] = round(svc.cv_scores[f'{metric}_mean'], ROUND_PRECISION)
-                    row[f'cv_{metric}_std'] = round(svc.cv_scores[f'{metric}_std'], ROUND_PRECISION)
-
-                results.append(row)
-
-        finally:
-            sys.stdout = original_stdout
-
-    # build the summary DataFrame, sort by MCC (best first), and save
-    summary_df = pd.DataFrame(results)
-    summary_df.sort_values(by='mcc', ascending=False, inplace=True)
-    summary_df.to_csv(summary_csv, index=False)
-
-    print(f"\nSummary written to {summary_csv}")
-    print(summary_df)
+    svc.evaluate(data)
+    svc.print_model_info()
+    print(f"\n----------------------------------------------------------------\n")
