@@ -1,12 +1,10 @@
-import os
 import time
 import pickle
 import pandas as pd
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
-from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
+from drone_basics.abstracts import AbstractModel
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, matthews_corrcoef
+from sklearn.model_selection import cross_validate, StratifiedKFold, train_test_split
 
 TEST_SIZE = 0.20
 SEED = 0
@@ -17,7 +15,6 @@ SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', '
 # from google.colab import drive
 # drive.mount('/content/drive')
 # file = '/content/drive/MyDrive/all_run_datasets.csv'
-
 
 file = '../../../data/all_run_datasets.csv'
 dataset = pd.read_csv(file)
@@ -88,74 +85,71 @@ class Data():
 
 data = Data(X_Train, X_Test, Y_Train, Y_Test)
 
-
-class SVCModel():
-    """
-    SVC model for classifying spoofing and benign flight data.
-
-    NOTE: this model uses a pipeline to scale the data before fitting the SVC model.
-    DO NOT call ReadFlightData.scale_data() before fitting this model, as the pipeline will
-    handle scaling the data for each fold in the cross validation, and for the final fit and predict.
-    """
+class RandomForestModel():
+    
 
     def __init__(self):
-        # pipeline for scaling and SVC model
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('svc', SVC(kernel = 'rbf', class_weight = 'balanced', random_state = SEED))
-        ])
+        # init the random forest model with 100 trees and balanced class weights for imbalanced data
+        self.model = RandomForestClassifier(n_estimators = 100, random_state = SEED, class_weight = 'balanced')
 
         # Stratified K-Fold cross-validator
         self.skf = StratifiedKFold(n_splits = 5, shuffle = True, random_state = SEED)
     
-
     def train_model(self, data):
         """train the model and calculate its training time"""
         start = time.time()
-        self.model_fit = self.pipeline.fit(data.X_Train, data.Y_Train)
+        self.model_fit = self.model.fit(data.X_Train, data.Y_Train)
         self.train_time = time.time() - start
     
-
     def predict(self, data):
         """predict the labels for the test data and calculate its prediction time"""
         start = time.time()
         self.model_prediction = self.model_fit.predict(data.X_Test)
         self.predict_time = time.time() - start
         return self.model_prediction
-
+    
 
     def evaluate(self, data):
-        self.accuracy= accuracy_score(data.Y_Test, self.model_prediction)
+        self.accuracy = accuracy_score(data.Y_Test, self.model_prediction)
         self.precision = precision_score(data.Y_Test, self.model_prediction, average="weighted")
         self.recall = recall_score(data.Y_Test, self.model_prediction, average="weighted")
         self.f1 = f1_score(data.Y_Test, self.model_prediction, average="weighted")
         self.confussion_max = confusion_matrix(data.Y_Test, self.model_prediction)
         self.mcc = matthews_corrcoef(data.Y_Test, self.model_prediction)
 
-        
+
         self._set_model_size()
         self.print_model_info()
-        
-        return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
 
-    def cross_validate(self, data):
+        return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
+    
+
+    def cross_validate(self, data) -> dict:
         """
-        perform cross validation using the pipeline and the stratified k-fold cross-validator
+        Perform cross validation on the model using the provided data.
+
+        Args:
+            data: The data to use for cross validation.
+
+        Returns:
+            A dictionary containing the cross validation results.
         """
-        scores = {}
+        cv_scores = {}
         results = cross_validate(
-            self.pipeline,
+            self.model,
             data.X_Train,
             data.Y_Train,
             cv=self.skf,
             scoring=SCORING
         )
 
-        for metric in SCORING:
-            scores[f'{metric}_mean'] = results[f'test_{metric}'].mean()
-            scores[f'{metric}_std'] = results[f'test_{metric}'].std()
-
-        self.cv_scores = scores
+        for metric in self.SCORING:
+            cv_scores[f'{metric}_mean'] = results[f'test_{metric}'].mean()
+            cv_scores[f'{metric}_std'] = results[f'test_{metric}'].std()
+        
+        self.cv_scores = cv_scores
+        
+        return cv_scores
 
 
     def _set_model_size(self):
@@ -167,41 +161,41 @@ class SVCModel():
     def print_model_info(self):
         """print the model information"""
 
-        print("\nSVC Model Information:")
+        print("\nRandom Forest Model Information:")
         print(f"Model Size:         {round(self.model_size_kb, ROUND_PRECISION)} KB")
         print(f"Training Time:      {round(self.train_time, ROUND_PRECISION)} seconds")
         print(f"Prediction Time:    {round(self.predict_time, ROUND_PRECISION)} seconds")
 
-        print("\nSVC Model Evaluation:")
-        print(f"SVC Accuracy:  {round(self.accuracy, ROUND_PRECISION)}")
-        print(f"SVC Precision: {round(self.precision, ROUND_PRECISION)}")
-        print(f"SVC Recall:    {round(self.recall, ROUND_PRECISION)}")
-        print(f"SVC F1:        {round(self.f1, ROUND_PRECISION)}")
-        print(f"SVC MCC:       {round(self.mcc, ROUND_PRECISION)}")
-        print(f"SVC Confusion Matrix:\n{self.confussion_max}")
+        print("\nRandom Forest Model Evaluation:")
+        print(f"Random Forest Accuracy:  {round(self.accuracy, ROUND_PRECISION)}")
+        print(f"Random Forest Precision: {round(self.precision, ROUND_PRECISION)}")
+        print(f"Random Forest Recall:    {round(self.recall, ROUND_PRECISION)}")
+        print(f"Random Forest F1:        {round(self.f1, ROUND_PRECISION)}")
+        print(f"Random Forest MCC:       {round(self.mcc, ROUND_PRECISION)}")
+        print(f"Random Forest Confusion Matrix:\n{self.confussion_max}")
 
         print("\nCross Validation Scores:")
         for metric in SCORING:
-            print(f"{metric} mean: {round(self.cv_scores[f'{metric}_mean'], ROUND_PRECISION)}")
-            print(f"{metric} std:  {round(self.cv_scores[f'{metric}_std'], ROUND_PRECISION)}\n")
+            print(f"{metric} Mean: {round(self.cv_scores[f'{metric}_mean'], ROUND_PRECISION)}")
+            print(f"{metric} Std:  {round(self.cv_scores[f'{metric}_std'], ROUND_PRECISION)}\n")
 
-svc = SVCModel()
+rf = RandomForestModel()
 
 print('starting model training')
-svc.train_model(data)
+rf.train_model(data)
 print('model training complete')
 
 print('starting cross validation')
-svc.cross_validate(data)
+rf.cross_validate(data)
 print('cross validation complete')
 
 print('starting model prediction')
-svc.predict(data)
+rf.predict(data)
 print('model prediction complete')
 
 print('starting model evaluation')
-svc.evaluate(data)
+rf.evaluate(data)
 print('model evaluation complete\n')
 
 
-svc.print_model_info()
+rf.print_model_info()

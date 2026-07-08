@@ -13,3 +13,5 @@ src/data_collection/dataset
 src/data_collection/dataset.zip
 
 src/data_collection/merged_data
+
+data/imbalanced_80_20_all_runs.zip
