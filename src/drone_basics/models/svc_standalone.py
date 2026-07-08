@@ -4,9 +4,6 @@ svc_standalone.py
 This script is a standalone implementation of the SVC model
 
 To run:
-    choose dataset file by updating the FILE constant
-    choose a parameter combination from the PARAMS list by updating the param variable
-
     python <filename>.py
 """
 import time
@@ -23,65 +20,7 @@ TEST_SIZE = 0.20
 SEED = 0
 ROUND_PRECISION = 4
 SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
-
-
-# Change this to update dataset and parameter combination
 FILE = '../../../data/imbalanced_data_80_20.csv'
-PARAM_ID = 0
-
-
-"""
-6 different parameter combinations to test from 3 C values and 3 gamma values
-
-C values [0.1, 1, 10]
-gamma values ['scale', 0.1]
-
-all tests use rbf and balanced weights
-"""
-PARAMS = [
-    {
-        'id': 0,
-        'kernel': 'rbf',
-        'class_weight': 'balanced',
-        'C': 0.1,
-        'gamma': 'scale'
-    },
-    {
-        'id': 1,
-        'kernel': 'rbf',
-        'class_weight': 'balanced',
-        'C': 0.1,
-        'gamma': 0.1
-    },
-    {
-        'id': 2,
-        'kernel': 'rbf',
-        'class_weight': 'balanced',
-        'C': 1,
-        'gamma': 'scale'
-    },
-    {
-        'id': 3,
-        'kernel': 'rbf',
-        'class_weight': 'balanced',
-        'C': 1,
-        'gamma': 0.1
-    },
-    {
-        'id': 4,
-        'kernel': 'rbf',
-        'class_weight': 'balanced',
-        'C': 10,
-        'gamma': 'scale'
-    },
-    {
-        'id': 5,
-        'kernel': 'rbf',
-        'class_weight': 'balanced',
-        'C': 10,
-        'gamma': 0.1
-    }
-]
 
 
 """if using colab"""
@@ -189,17 +128,15 @@ class SVCModel():
     handle scaling the data for each fold in the cross validation, and for the final fit and predict.
     """
 
-    def __init__(self, kernel='rbf', class_weight='balanced', C=1.0, gamma='scale', random_state=SEED):
+    def __init__(self):
         
         # pipeline for scaling and SVC model
         self.pipeline = Pipeline([
             ('scaler', StandardScaler()),
             ('svc', SVC(
-                kernel = kernel,
-                class_weight = class_weight,
-                C = C,
-                gamma = gamma,
-                random_state = random_state
+                kernel = 'rbf',
+                class_weight = 'balanced',
+                random_state = SEED
             ))
         ])
 
@@ -282,27 +219,8 @@ class SVCModel():
             print(f"{metric} mean: {round(self.cv_scores[f'{metric}_mean'], ROUND_PRECISION)}")
             print(f"{metric} std:  {round(self.cv_scores[f'{metric}_std'], ROUND_PRECISION)}\n")
 
-class Tee:
-    """
-    Writes everything to both the terminal and a file at once
-    """
-    def __init__(self, *streams):
-        self.streams = streams
-
-    def write(self, data):
-        for stream in self.streams:
-            stream.write(data)
-            stream.flush()
-
-    def flush(self):
-        for stream in self.streams:
-            stream.flush()
-
 
 if __name__ == "__main__":
-    
-    param = PARAMS[PARAM_ID]
-
     # set up the data
     data = Data(FILE)
     data.read_file()
@@ -319,24 +237,18 @@ if __name__ == "__main__":
 
     for col in data.X_Train.columns:
         assert col in data.X_Test.columns, f"Column {col} exists in Training set but not in Testing set"
-    
+
     for col in data.X_Test.columns:
         assert col in data.X_Train.columns, f"Column {col} exists in Testing set but not in Training set"
-    
+
     assert data.X_Train.shape[1] == data.X_Test.shape[1], "Training and Testing sets have different number of features"
 
     print(f'\nTraining/Testing set columns: {data.X_Train.columns}\n')
     print(f'Training set label distribution:\n{data.Y_Train.value_counts(normalize=True)}\n')
     print(f'Testing set label distribution:\n{data.Y_Test.value_counts(normalize=True)}\n')
+    
 
-    print(f"\n----- Training SVC model with parameters: {param} -----")
-
-    svc = SVCModel(
-        kernel=param['kernel'],
-        class_weight=param['class_weight'],
-        C=param['C'],
-        gamma=param['gamma'],
-    )
+    svc = SVCModel()
 
     print(f'\nBegin training at {time.strftime("%H:%M:%S", time.localtime())}')
     svc.train_model(data)
@@ -353,3 +265,88 @@ if __name__ == "__main__":
     svc.evaluate(data)
     svc.print_model_info()
     print(f"\n----------------------------------------------------------------\n")
+
+"""
+Output:
+Removing column gps_fix_type: constant column
+Removing column gps_satellites_used: constant column
+Removing column flight duration: constant column
+Removing column timestamp
+Removed 4 columns
+Dropping: ['label', 'gps condition', 'run id', 'mission type', 'location name'] from Training/Testing sets
+
+----- Data Stats -----
+Data shape: (406958, 22)
+Normal label count: 325187
+Spoof label count: 81771
+
+Data columns: Index(['gps_latitude_deg', 'gps_longitude_deg', 'gps_altitude_msl_m',
+       'gps_vel_n_m_s', 'gps_vel_e_m_s', 'gps_vel_d_m_s', 'global_lat',
+       'global_lon', 'global_alt', 'odom_pos_x', 'odom_pos_y', 'odom_pos_z',
+       'odom_vel_x', 'odom_vel_y', 'odom_vel_z', 'run id', 'location name',
+       'lat', 'long', 'label', 'gps condition', 'mission type'],
+      dtype='str')
+
+Training set shape: (325566, 17)
+Testing set shape: (81392, 17)
+
+Training/Testing set columns: Index(['gps_latitude_deg', 'gps_longitude_deg', 'gps_altitude_msl_m',
+       'gps_vel_n_m_s', 'gps_vel_e_m_s', 'gps_vel_d_m_s', 'global_lat',
+       'global_lon', 'global_alt', 'odom_pos_x', 'odom_pos_y', 'odom_pos_z',
+       'odom_vel_x', 'odom_vel_y', 'odom_vel_z', 'lat', 'long'],
+      dtype='str')
+
+Training set label distribution:
+label
+0    0.799067
+1    0.200933
+Name: proportion, dtype: float64
+
+Testing set label distribution:
+label
+0    0.799071
+1    0.200929
+Name: proportion, dtype: float64
+
+
+Begin training at 14:02:34
+Training complete
+
+Begin cross-validation at 14:22:00
+Cross-validation complete
+
+Begin prediction at 15:37:34
+Prediction complete
+
+
+SVC Model Information:
+Model Size:         3662.7148 KB
+Training Time:      1166.4595 seconds
+Prediction Time:    186.2999 seconds
+
+SVC Model Evaluation:
+SVC Accuracy:  0.9513
+SVC Precision: 0.9604
+SVC Recall:    0.9513
+SVC F1:        0.9531
+SVC MCC:       0.8686
+SVC Confusion Matrix:
+[[61126  3912]
+ [   54 16300]]
+
+Cross Validation Scores:
+accuracy mean: 0.9504
+accuracy std:  0.0012
+
+precision_weighted mean: 0.9598
+precision_weighted std:  0.0008
+
+recall_weighted mean: 0.9504
+recall_weighted std:  0.0012
+
+f1_weighted mean: 0.9522
+f1_weighted std:  0.0011
+
+matthews_corrcoef mean: 0.8664
+matthews_corrcoef std:  0.0028
+"""
