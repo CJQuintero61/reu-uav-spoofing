@@ -17,7 +17,7 @@ The pipeline for this specific file:
 """
 
 #Import for abstract and supports
-from drone_basics.abstracts import AbstractModel
+from abstracts import AbstractModel
 
 #Import for models
 import xgboost as xgb #XGBoost

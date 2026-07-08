@@ -32,7 +32,7 @@ The pipeline for this specific file:
 """
 
 #Import for abstract
-from drone_basics.abstracts import AbstractModel
+from abstracts import AbstractModel
 
 #1D-CNN model imports
 import torch
@@ -42,7 +42,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 
 #Data reader helper
-from drone_basics.window_module import WindowingModule
+from window_module import WindowingModule
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 #Model 1D CNN implemented using PyTorch

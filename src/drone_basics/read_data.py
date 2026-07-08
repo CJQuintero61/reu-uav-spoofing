@@ -31,7 +31,7 @@ from sklearn.preprocessing import StandardScaler
 class ReadFlightData():
     def __init__(self):
         self.director = os.path.dirname(__file__)
-        self.file_name = os.path.join(self.director, "spoofing-merged-gps-only.csv")
+        self.file_name = os.path.join(self.director, "imbalanced_data_80_20.csv")
         self.dataset = pd.read_csv(self.file_name)
         
         nan_count = self.dataset.isnull().sum().sum()
@@ -47,7 +47,7 @@ class ReadFlightData():
                 print(f'Removing column {col}')
         
         #drop timestamp as well.
-        columns_to_drop.append('timestamp')
+        columns_to_drop.append('gps_timestamp')
         print('Removing column timestamp')
 
         #Drops these items from the dataset
@@ -67,8 +67,10 @@ class ReadFlightData():
     # y = 0 for real, 1 for spoof/malicious
     # x drops the columns label and saves the features.
     def split_random_data(self):
-        y = self.dataset['label'].map({'benign': 0, 'malicious': 1})
-        x = self.dataset.drop(columns=['label'])
+        y = self.dataset['label']
+        x = self.dataset.drop(columns=['label', 'gps condition',
+                                       'run id', 'mission type',
+                                       'location name'])
 
         self.X_Train, self.X_Test, self.Y_Train, self.Y_Test = train_test_split(
             x,

@@ -1,5 +1,5 @@
 #Import abstract file
-from drone_basics.abstracts import AbstractAction
+from abstracts import AbstractAction
 
 class TrainAction(AbstractAction):
     def execute(self, model, data):

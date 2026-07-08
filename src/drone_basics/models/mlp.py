@@ -17,9 +17,7 @@ The pipeline for this specific file:
 """
 
 #Model abtract
-from drone_basics.abstracts import AbstractModel
-
-
+from abstracts import AbstractModel
 
 #Imports for models
 from sklearn.neural_network import MLPClassifier #MLP
