@@ -1,96 +1,129 @@
+"""
+random_forest_standalone.py
+
+This script is a standalone implementation of the RF model
+
+To run:
+    python <filename>.py
+"""
 import time
 import pickle
 import pandas as pd
-from drone_basics.abstracts import AbstractModel
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, matthews_corrcoef
 from sklearn.model_selection import cross_validate, StratifiedKFold, train_test_split
 
+# testing and metric constants
 TEST_SIZE = 0.20
 SEED = 0
 ROUND_PRECISION = 4
 SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
+FILE = '../../../data/all_run_datasets.csv'
 
 """if using colab"""
 # from google.colab import drive
 # drive.mount('/content/drive')
 # file = '/content/drive/MyDrive/all_run_datasets.csv'
 
-file = '../../../data/all_run_datasets.csv'
-dataset = pd.read_csv(file)
-
-nan_count = dataset.isnull().sum().sum()
-assert nan_count == 0, "NaNs were found in the data"
-
-# Cleans the data by removing the unnecessary columns from data.
-def data_clean():
-    columns_to_drop = []
-    
-    for col in dataset.columns:
-        # remove columns that have only 1 unique value
-        if dataset[col].nunique() == 1 and col != 'label':
-            columns_to_drop.append(col)
-            print(f'Removing column {col}: constant column')
-            
-        # remove columns that have string values
-        if isinstance(dataset[col][1], str) and col != 'label':
-            columns_to_drop.append(col)
-            print(f'Removing column {col}: string column')
-
-    # Drops these items from the dataset
-    dataset.drop(columns=columns_to_drop, inplace=True)
-    print(f'Removed {len(columns_to_drop)} columns')
-
-    # Remove special symbols from colums
-    # Remove the [], _, and <
-    dataset.columns = (
-        dataset.columns
-        .str.replace("[", "_", regex=False)
-        .str.replace("]", "_", regex=False)
-        .str.replace("<", "_", regex=False)
-    )
-
-# cleans the data inplace
-data_clean()
-
-# split the data where:
-# y = 0 for real, 1 for spoof/malicious
-# x drops the columns label and saves the features.
-def split_random_data():
-    y = dataset['label']
-    x = dataset.drop(columns=['label'])
-
-    assert 'gps condition' not in x.columns, "gps condition was not dropped successfully"
-    assert 'label' not in x.columns, "label was not dropped successfully"
-
-    X_Train, X_Test, Y_Train, Y_Test = train_test_split(
-        x,
-        y,
-        test_size=TEST_SIZE,
-        shuffle=True,
-        random_state=SEED,
-        stratify = y
-    )
-
-    return X_Train, X_Test, Y_Train, Y_Test
-
-X_Train, X_Test, Y_Train, Y_Test = split_random_data()
-
 class Data():
-    def __init__(self, X_Train, X_Test, Y_Train, Y_Test):
+    """
+    This data class reads and prepares the data for training and testing a model.
+    """
+    def __init__(self, file):
+        """
+        Args:
+            file (str): path to the dataset CSV file
+        """
+        self.X_Train = None
+        self.X_Test = None
+        self.Y_Train = None
+        self.Y_Test = None
+        self.dataset = None
+        self.file = file
+    
+
+    def read_file(self):
+        """
+        reads the file and checks for NaNs and ensures the dataset is a pandas DataFrame
+        """
+        self.dataset = pd.read_csv(self.file)
+        assert isinstance(self.dataset, pd.DataFrame), "dataset is not a pandas DataFrame"
+
+        nan_count = self.dataset.isnull().sum().sum()
+        assert nan_count == 0, "NaNs were found in the data"
+    
+
+    def data_clean(self):
+        """
+        cleans the data by removing unnecessary columns and special characters from column names
+        """
+        columns_to_drop = []
+
+        # removes columns that only have 1 unique value
+        for col in self.dataset.columns:
+            if self.dataset[col].nunique() == 1 and col != 'label':
+                columns_to_drop.append(col)
+                print(f'Removing column {col}: constant column')
+        
+        #drop timestamp as well.
+        columns_to_drop.append('gps_timestamp')
+        print('Removing column timestamp')
+
+        #Drops these items from the dataset
+        self.dataset.drop(columns=columns_to_drop, inplace=True)
+        print(f'Removed {len(columns_to_drop)} columns')
+
+        #Remove special symbols from colums
+        #Remove the [], _, and <
+        self.dataset.columns = (
+            self.dataset.columns
+            .str.replace("[", "_", regex=False)
+            .str.replace("]", "_", regex=False)
+            .str.replace("<", "_", regex=False)
+        )
+
+
+    def split_random_data(self):
+        """
+        splits the data into training and testing sets
+
+        y = 0 for normal, 1 for spoof/malicious
+        x drops the columns label and saves the features.
+        """
+        y = self.dataset['label']
+        x = self.dataset.drop(columns=['label', 'gps condition',
+                                       'run id', 'mission type',
+                                       'location name'])
+
+        print(f'Dropping: {["label", "gps condition", "run id", "mission type", "location name"]} from Training/Testing sets')
+
+        assert 'gps condition' not in x.columns, "gps condition was not dropped successfully"
+        assert 'label' not in x.columns, "label was not dropped successfully"
+
+        X_Train, X_Test, Y_Train, Y_Test = train_test_split(
+            x,
+            y,
+            test_size=TEST_SIZE,
+            shuffle=True,
+            random_state=SEED,
+            stratify = y
+        )
+
         self.X_Train = X_Train
         self.X_Test = X_Test
         self.Y_Train = Y_Train
         self.Y_Test = Y_Test
 
-data = Data(X_Train, X_Test, Y_Train, Y_Test)
 
 class RandomForestModel():
     
-
     def __init__(self):
         # init the random forest model with 100 trees and balanced class weights for imbalanced data
-        self.model = RandomForestClassifier(n_estimators = 100, random_state = SEED, class_weight = 'balanced')
+        self.model = RandomForestClassifier(
+            n_estimators = 100,
+            random_state = SEED,
+            class_weight = 'balanced'
+        )
 
         # Stratified K-Fold cross-validator
         self.skf = StratifiedKFold(n_splits = 5, shuffle = True, random_state = SEED)
@@ -179,23 +212,49 @@ class RandomForestModel():
             print(f"{metric} Mean: {round(self.cv_scores[f'{metric}_mean'], ROUND_PRECISION)}")
             print(f"{metric} Std:  {round(self.cv_scores[f'{metric}_std'], ROUND_PRECISION)}\n")
 
-rf = RandomForestModel()
 
-print('starting model training')
-rf.train_model(data)
-print('model training complete')
+if __name__ == "__main__":
+    # set up the data
+    data = Data(FILE)
+    data.read_file()
+    data.data_clean()
+    data.split_random_data()
 
-print('starting cross validation')
-rf.cross_validate(data)
-print('cross validation complete')
+    print('\n----- Data Stats -----')
+    print(f'Data shape: {data.dataset.shape}')
+    print(f'Normal label count: {data.dataset["label"].value_counts()[0]}')
+    print(f'Spoof label count: {data.dataset["label"].value_counts()[1]}')
+    print(f'\nData columns: {data.dataset.columns}\n')
+    print(f'Training set shape: {data.X_Train.shape}')
+    print(f'Testing set shape: {data.X_Test.shape}')
 
-print('starting model prediction')
-rf.predict(data)
-print('model prediction complete')
+    for col in data.X_Train.columns:
+        assert col in data.X_Test.columns, f"Column {col} exists in Training set but not in Testing set"
 
-print('starting model evaluation')
-rf.evaluate(data)
-print('model evaluation complete\n')
+    for col in data.X_Test.columns:
+        assert col in data.X_Train.columns, f"Column {col} exists in Testing set but not in Training set"
 
+    assert data.X_Train.shape[1] == data.X_Test.shape[1], "Training and Testing sets have different number of features"
 
-rf.print_model_info()
+    print(f'\nTraining/Testing set columns: {data.X_Train.columns}\n')
+    print(f'Training set label distribution:\n{data.Y_Train.value_counts(normalize=True)}\n')
+    print(f'Testing set label distribution:\n{data.Y_Test.value_counts(normalize=True)}\n')
+    
+
+    rf = RandomForestModel()
+
+    print(f'\nBegin training at {time.strftime("%H:%M:%S", time.localtime())}')
+    rf.train_model(data)
+    print('Training complete\n')
+
+    print(f'Begin cross-validation at {time.strftime("%H:%M:%S", time.localtime())}')
+    rf.cross_validate(data)
+    print('Cross-validation complete\n')
+
+    print(f'Begin prediction at {time.strftime("%H:%M:%S", time.localtime())}')
+    rf.predict(data)
+    print('Prediction complete\n')
+
+    rf.evaluate(data)
+    rf.print_model_info()
+    print(f"\n----------------------------------------------------------------\n")
