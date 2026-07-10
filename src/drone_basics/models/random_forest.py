@@ -6,10 +6,9 @@ This file implements the random forest classifier
 """
 import time
 import pickle
-from drone_basics.abstracts import AbstractModel
+from abstracts import AbstractModel
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, matthews_corrcoef
-from sklearn.model_selection import cross_validate, StratifiedKFold
 
 class RandomForestModel(AbstractModel):
     SEED = 0
@@ -22,9 +21,6 @@ class RandomForestModel(AbstractModel):
 
         # init the random forest model with 100 trees and balanced class weights for imbalanced data
         self.model = RandomForestClassifier(n_estimators = 100, random_state = self.SEED, class_weight = 'balanced')
-
-        # Stratified K-Fold cross-validator
-        self.skf = StratifiedKFold(n_splits = 5, shuffle = True, random_state = self.SEED)
     
 
     def train_model(self, data):
@@ -50,40 +46,11 @@ class RandomForestModel(AbstractModel):
         self.confussion_max = confusion_matrix(data.Y_Test, self.model_prediction)
         self.mcc = matthews_corrcoef(data.Y_Test, self.model_prediction)
 
-        self.scores = self._cross_validate(data)    # cross validate
-        self._set_model_size()                      # set model size
+        self._set_model_size()
         self.print_model_info()
 
 
         return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
-    
-
-    def _cross_validate(self, data) -> dict:
-        """
-        Perform cross validation on the model using the provided data.
-
-        Args:
-            data: The data to use for cross validation.
-
-        Returns:
-            A dictionary containing the cross validation results.
-        """
-        cv_scores = {}
-        results = cross_validate(
-            self.model,
-            data.X_Train,
-            data.Y_Train,
-            cv=self.skf,
-            scoring=self.SCORING
-        )
-
-        for metric in self.SCORING:
-            cv_scores[f'{metric}_mean'] = results[f'test_{metric}'].mean()
-            cv_scores[f'{metric}_std'] = results[f'test_{metric}'].std()
-        
-        self.cv_scores = cv_scores
-        
-        return cv_scores
 
 
     def _set_model_size(self):
@@ -107,8 +74,3 @@ class RandomForestModel(AbstractModel):
         print(f"Random Forest F1:        {round(self.f1, self.ROUND_PRECISION)}")
         print(f"Random Forest MCC:       {round(self.mcc, self.ROUND_PRECISION)}")
         print(f"Random Forest Confusion Matrix:\n{self.confussion_max}")
-
-        print("\nCross Validation Scores:")
-        for metric in self.SCORING:
-            print(f"{metric} Mean: {round(self.cv_scores[f'{metric}_mean'], self.ROUND_PRECISION)}")
-            print(f"{metric} Std:  {round(self.cv_scores[f'{metric}_std'], self.ROUND_PRECISION)}\n")

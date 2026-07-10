@@ -14,6 +14,8 @@ src/data_collection/dataset.zip
 
 src/data_collection/merged_data
 
+src/drone_basics/*.csv
+
 data/imbalanced_80_20_all_runs.zip
 
 data/imbalanced_data_80_20.csv
