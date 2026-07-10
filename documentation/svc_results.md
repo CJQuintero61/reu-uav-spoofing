@@ -3,6 +3,23 @@
 This file contains the results of the SVC model ran with different
 datasets and hyperparameters.
 
+## Basic Model Result Summary
+
+80/20 Results
+
+- f1 mean  = 0.9522 +/- 0.0011
+- mcc mean = 0.8664 +/- 0.0028
+
+90/10 Results
+
+- f1 mean = 0.8997 +/- 0.0008
+- mcc mean = 0.66 +/- 0.0017
+
+Balanced Results
+
+- f1 mean = 0.8838 +/- 0.0017
+- mcc mean = 0.7751 +/- 0.0034
+
 ## Base Model With 80/20 Data
 
 This is the base model ran with a data imbalance of about 80% normal/20% spoofed
@@ -202,3 +219,89 @@ params:
 
         matthews_corrcoef mean: 0.66
         matthews_corrcoef std:  0.0017
+
+## Base Model with Balanced Data
+
+params are all default
+
+        Removing column gps_fix_type: constant column
+        Removing column gps_satellites_used: constant column
+        Removing column flight duration: constant column
+        Removing column timestamp
+        Removed 4 columns
+        Dropping: ['label', 'gps condition', 'run id', 'mission type', 'location name'] from Training/Testing sets
+
+        ----- Data Stats -----
+        Data shape: (446077, 22)
+        Normal label count: 216488
+        Spoof label count: 229589
+
+        Data columns: Index(['gps_latitude_deg', 'gps_longitude_deg', 'gps_altitude_msl_m',
+            'gps_vel_n_m_s', 'gps_vel_e_m_s', 'gps_vel_d_m_s', 'global_lat',
+            'global_lon', 'global_alt', 'odom_pos_x', 'odom_pos_y', 'odom_pos_z',
+            'odom_vel_x', 'odom_vel_y', 'odom_vel_z', 'run id', 'location name',
+            'lat', 'long', 'label', 'gps condition', 'mission type'],
+            dtype='str')
+
+        Training set shape: (356861, 17)
+        Testing set shape: (89216, 17)
+
+        Training/Testing set columns: Index(['gps_latitude_deg', 'gps_longitude_deg', 'gps_altitude_msl_m',
+            'gps_vel_n_m_s', 'gps_vel_e_m_s', 'gps_vel_d_m_s', 'global_lat',
+            'global_lon', 'global_alt', 'odom_pos_x', 'odom_pos_y', 'odom_pos_z',
+            'odom_vel_x', 'odom_vel_y', 'odom_vel_z', 'lat', 'long'],
+            dtype='str')
+
+        Training set label distribution:
+        label
+        1    0.514685
+        0    0.485315
+        Name: proportion, dtype: float64
+
+        Testing set label distribution:
+        label
+        1    0.514683
+        0    0.485317
+        Name: proportion, dtype: float64
+
+
+        Begin training at 15:49:29
+        Training complete
+
+        Begin cross-validation at 17:27:47
+        Cross-validation complete
+
+        Begin prediction at 23:38:08
+        Prediction complete
+
+
+        SVC Model Information:
+        Model Size:         16630.375 KB
+        Training Time:      5897.593 seconds
+        Prediction Time:    978.5147 seconds
+
+        SVC Model Evaluation:
+        SVC Accuracy:  0.885
+        SVC Precision: 0.8924
+        SVC Recall:    0.885
+        SVC F1:        0.8847
+        SVC MCC:       0.7776
+        SVC Confusion Matrix:
+        [[41149  2149]
+        [ 8113 37805]]
+
+        Cross Validation Scores:
+        accuracy mean: 0.8841
+        accuracy std:  0.0017
+
+        precision_weighted mean: 0.8908
+        precision_weighted std:  0.0017
+
+        recall_weighted mean: 0.8841
+        recall_weighted std:  0.0017
+
+        f1_weighted mean: 0.8838
+        f1_weighted std:  0.0017
+
+        matthews_corrcoef mean: 0.7751
+        matthews_corrcoef std:  0.0034

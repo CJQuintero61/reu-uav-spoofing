@@ -20,7 +20,7 @@ TEST_SIZE = 0.20
 SEED = 0
 ROUND_PRECISION = 4
 SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
-FILE = '../../../data/spoof_imbalance_0.07_chance.csv'
+FILE = '../../../data/all_run_datasets.csv'
 
 
 """if using colab"""
