@@ -8,7 +8,7 @@ from datetime import datetime
 import shutil
 
 #import setup variables
-import config_vars as variables
+import data_collection_module.config_vars as variables
 
 """
 This file is to run an autonomous flight sim of n nuumber of flights.
@@ -21,39 +21,16 @@ The goal is to have it be autonomous while storing the ulogs and
 class ScenarioSelection():
     def create(self, run_id):
         selected_location = random.choice(variables.locations)
-
-        # get the run id without the "run_" prefix
-        id = run_id.strip("run_")
-        id = int(id)  # convert to integer
-
-        print(f"\n-------- Run ID for spoofing: {id} --------")
-
-        if id % 5 == 0:
-            # Every 5th run, select a spoofing profile
-            print(f"\n-------- Running SPOOFED mission --------")
-            scenario = {
-                "run id": run_id,
-                "location": selected_location,
-                "location name": selected_location["name"],
-                "altitude": random.choice(variables.altitude),
-                "gps condition": "spoofed",
-                "mission type": random.choice(variables.mission_type),
-                "flight duration" : 600,
-                "spoof types" : random.choice(variables.spoofing_profiles)
-            }
-        else:
-            # For other runs, select a normal GPS condition
-            print(f"\n-------- Running NORMAL mission --------")
-            scenario = {
-                "run id": run_id,
-                "location": selected_location,
-                "location name": selected_location["name"],
-                "altitude": random.choice(variables.altitude),
-                "gps condition": "normal",
-                "mission type": random.choice(variables.mission_type),
-                "flight duration" : 600,
-                "spoof types" : random.choice(variables.spoofing_profiles)
-            }
+        scenario = {
+            "run id": run_id,
+            "location": selected_location,
+            "location name": selected_location["name"],
+            "altitude": random.choice(variables.altitude),
+            "gps condition": random.choice(variables.gps_conditions),
+            "mission type": random.choice(variables.mission_type),
+            "flight duration" : 600,
+            "spoof types" : random.choice(variables.spoofing_profiles)
+        }
 
         return scenario
     
@@ -163,18 +140,3 @@ class RunFlightHandler():
             process.wait(timeout=10)
         except:
             os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-    
-    # Kill any leftover mavsdk_server processes and reap zombies
-    def kill_mavsdk_server(self):
-        subprocess.run(["pkill", "-9", "-f", "mavsdk_server"], check=False)
-        subprocess.run(["fuser", "-k", "50051/tcp"], check=False)
-        subprocess.run(["fuser", "-k", "14540/udp"], check=False)
-
-        # Reap any zombie children still attached to this process
-        try:
-            while True:
-                pid, status = os.waitpid(-1, os.WNOHANG)
-                if pid == 0:
-                    break
-        except ChildProcessError:
-            pass

@@ -1,7 +1,7 @@
 #import files
-from run_data_collection import ScenarioSelection, RunFlightHandler
-from autonomous_flight import DroneControl
-from config_vars import spoofing_profiles
+from data_collection_module.run_data_collection import ScenarioSelection, RunFlightHandler
+from data_collection_module.autonomous_flight import DroneControl
+from data_collection_module.config_vars import spoofing_profiles
 
 import asyncio
 import time
@@ -97,14 +97,12 @@ class RunHandlers():
             handler.create_folder()
             handler.save_data()
             print("\n-------- Successfully Created Dataset Folders --------")
-            handler.kill_mavsdk_server()
-            await asyncio.sleep(5)  # Wait for 5 seconds before starting the next flight
 
             print("\n-------- Started PX4 and Gazebo --------")
             px4_handler = handler.start_px4_gazebo()
 
             #Waits for 10 seconds and checks to see if PX4 fails.
-            await asyncio.sleep(10)
+            time.sleep(10)
             if px4_handler.poll() is not None:
                 print("\n-------- PX4 failed to start --------")
                 return
@@ -141,15 +139,15 @@ class RunHandlers():
             handler.stop_ros_process(ros2_bag_handler)
             handler.copy_ulog()
             handler.stop_px4_process(px4_handler)
-            handler.kill_mavsdk_server()
-
+            
             await asyncio.sleep(20)
+
             print("\n-------- All Processes stopped please check data --------")
 
 #Runs n number amounts of flights using runner.run(n)
 async def main_client():
     runner = RunHandlers()
-    await runner.run(5)
+    await runner.run(2)
 
 #In this specfic file runs the main client function
 if __name__ == "__main__":

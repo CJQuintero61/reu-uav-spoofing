@@ -22,7 +22,7 @@ from pathlib import Path
 import json
 import pandas as pd
 
-from spoof_types import RunGPSCondition 
+from data_collection_module.spoof_types import RunGPSCondition 
 
 #Ros2 and px4 translation items
 from rosbag2_py  import SequentialReader, StorageOptions, ConverterOptions
@@ -40,10 +40,11 @@ class ReadAndConvert():
     #Need to read the folder and open each flight run_00n to csv
         #source_dir = dataset/run_00n/ros_bag
         #dataset = destination 
-    def __init__(self, source_dir: Path, csv_destination: Path):
+    def __init__(self, source_dir: Path, csv_destination: Path, j_son: Path):
         self.source_dir = source_dir
         self.csv_destination = csv_destination
         self.run_folder = self.csv_destination / "run_csv"
+        self.j_son = j_son
 
     """
 ------------- COLLECT PATHS FOR FLIGHT DATA AND CREATE FOLDER -------------
@@ -51,10 +52,7 @@ class ReadAndConvert():
 
     #collects all the flight data from the folders
     def collect_flight_data(self):
-        flight_data = sorted(
-            self.source_dir.rglob("*.mcap"),
-            key=lambda path: path.parent.parent.parent.name
-        )
+        flight_data = list(item for item in self.source_dir.rglob("*.mcap"))
 
         #Safety check
         if not flight_data:
@@ -128,10 +126,6 @@ class ReadAndConvert():
         parent_flight_data = current_mcap.parent.parent.parent
         return parent_flight_data.name
 
-    def get_meta_path(self, current_mcap):
-        parent_meta_data = current_mcap.parent.parent.parent
-        return parent_meta_data / "metadata.json"
-    
     #Estabish the csv paths
     def get_csv_path(self, current_mcap):
         name = self.get_name(current_mcap)
@@ -347,6 +341,7 @@ class ReadAndConvert():
                 "location name": metadata.loc[0,"scenario.location name"],
                 "lat": metadata.loc[0,"scenario.location.lat"],
                 "long": metadata.loc[0,"scenario.location.long"],
+                "wind condition": metadata.loc[0,"scenario.wind condition"],
                 "label": metadata.loc[0,"label"],
                 "gps condition": metadata.loc[0,"scenario.gps condition"],
                 "mission type": metadata.loc[0,"scenario.mission type"],
@@ -380,13 +375,10 @@ class ReadAndConvert():
     def convert_ros2_csv(self, lat_meters, long_meters, drift, jump,
                          attack_start, attack_end):
         #Get director to us across different file directory formats
+
         #Collect data
         collected_data = self.collect_flight_data()
         print(f"\n-------- Collected Data --------")
-
-        #List to merge all the merged files together for 
-        #final merge
-        all_runs = []
 
         #Created folder
         self.create_folder()
@@ -395,20 +387,12 @@ class ReadAndConvert():
         #Read and start conversion
         print(f"\n-------- Starting Read on Ros Bag --------")
         for mcap in collected_data:
-            run_name = self.get_name(mcap)
-            print(f"\n-------- Processing {run_name} --------")
-            print(f"\n-------- MCAP Path: {mcap} --------")
             ros_bag = self.read_bag(mcap)
-            
             print(f"\n-------- Starting Create CSV --------")
             created_csv = self.create_csv(mcap, ros_bag)
-            
-            print(f"\n-------- Start Paths --------")
-            metadata_path = self.get_meta_path(mcap)
-            
             print(f"\n-------- Starting merge --------")
             merged = self.merge_csv(created_csv["gps"], created_csv["global"],
-                                     created_csv["odometry"], metadata_path,
+                                     created_csv["odometry"], self.j_son,
                                      lat_meters, long_meters, drift, jump,
                                      attack_start=attack_start, attack_end=attack_end)
 
@@ -416,72 +400,20 @@ class ReadAndConvert():
             print(f"\n-------- Saved Merged Items --------")
             self.save_merged_csv(merged, created_csv["merged"])
 
-            #Add each row indiviualy in this list
-            print(f"\n-------- Adding Row to List from Merged CSVs --------")
-            all_runs.extend(merged)
-        
-        
-        #Merges all the merged runs into one CSV
-        print(f"\n-------- Saved All Runs Together in CSV --------")
-        all_merged_datasets = self.run_folder / "all_run_folder" / "all_run_datasets.csv"
-        self.save_merged_csv(all_runs, all_merged_datasets)
-
         print(f"\n-------- Finished --------")
-    
-    def merge_all_runs(self):
-        output_path = self.run_folder / "all_run_datasets_2.csv"
-
-        df = pd.DataFrame()
-        for i in range(1, 26):
-            print(f"Merging run {i:03d} into final dataset...")
-            run_path = self.run_folder / f"run_{i:03d}_merged.csv"
-
-            if not run_path.exists():
-                print(f"Run {i:03d} does not exist")
-                raise ValueError(f"Run {i:03d} does not exist")
-
-            run_df = pd.read_csv(run_path)
-            df = pd.concat([df, run_df])
             
-            # make sure all columns match between the two DataFrames
-            for col in run_df.columns:
-                assert col in df.columns, f"Column {col} is missing in the final DataFrame"
-            
-            for col in df.columns:
-                assert col in run_df.columns, f"Column {col} is missing in the run DataFrame"
-
-            assert df.shape[1] == run_df.shape[1], f"Column count mismatch: {df.shape[1]} vs {run_df.shape[1]}"
-        
-        print(f'\n-------- Final Merged DF Shape: {df.shape} --------')
-        df.to_csv(output_path, index=False)
 """
 ------------- CLIENT HANDLER -------------
 """    
 
-def client(source_dir, csv_destination,
+def client(source_dir, csv_destination, j_son,
            lat_meters, long_meters, 
            drift, jump,
            attack_start, attack_end):
-    read_folders = ReadAndConvert(source_dir, csv_destination)
+    read_folders = ReadAndConvert(source_dir, csv_destination, j_son)
     read_folders.convert_ros2_csv(lat_meters=lat_meters, long_meters=long_meters,
-                                 drift=drift, jump=jump,
+                                  drift=drift, jump=jump,
                                   attack_start=attack_start, attack_end=attack_end)
-
-    read_folders.merge_all_runs()
-
-    '''
-    df = pd.DataFrame()
-    df = pd.read_csv('./merged_data/run_csv/all_run_datasets.csv')
-
-    counts = df["label"].value_counts()
-    num_1s = counts.get(1, 0)
-    num_0s = counts.get(0, 0)
-    print(f'\n-------- Final Merged DF Shape: {df.shape} --------')
-    print(f'\n-------- Final Merged DF Columns: {df.columns} --------')
-    print(f'\n-------- Spoofed Count: {num_1s} --------')
-    print(f'\n-------- Normal Count: {num_0s} --------')
-    '''
-
 
 """
 ------------- RUN APPLICATION HERE -------------
@@ -490,9 +422,10 @@ def client(source_dir, csv_destination,
 if __name__ == "__main__":
 
     #Change with your file path
-    source = Path("./dataset")
-    destination = Path("./merged_data")
-    client_test = client(source, destination,
+    source = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset")
+    destination = Path("/home/mudsk/ros_csv")
+    j_son = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset/run_001/metadata.json")
+    client_test = client(source, destination, j_son,
                          lat_meters=10, long_meters=15,
                          drift=5, jump=10,
                          attack_start=120, attack_end=350)

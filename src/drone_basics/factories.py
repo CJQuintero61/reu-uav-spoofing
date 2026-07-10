@@ -1,17 +1,11 @@
 #import models
-<<<<<<<< HEAD:src/drone_basics/factories.py
-from drone_basics.models.lstm_model import LSTMExecution
-from drone_basics.models.mlp import MLPModel
-from drone_basics.models.one_dim_Cnn import OneDimExecution
-from drone_basics.models.xg_boost import XGBoostModel
-from drone_basics.models.svc import SVCModel
-from drone_basics.models.random_forest import RandomForestModel
-========
 from models.lstm_model import LSTMExecution
 from models.mlp import MLPModel
 from models.one_dim_Cnn import OneDimExecution
 from models.xg_boost import XGBoostModel
->>>>>>>> origin/Lilyanna_Branch:src/model_helper/factories.py
+from models.random_forest import RandomForestModel
+from models.svc import SVCModel
+
 
 #import action types
 from execute_action import TrainAction, TestAction, EvaluateAction

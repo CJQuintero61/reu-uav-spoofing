@@ -11,7 +11,7 @@ import pickle
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, matthews_corrcoef
-from sklearn.model_selection import cross_validate, StratifiedKFold, train_test_split
+from sklearn.model_selection import cross_validate, StratifiedKFold, train_test_split, StratifiedGroupKFold
 
 # testing and metric constants
 TEST_SIZE = 0.20
@@ -40,6 +40,7 @@ class Data():
         self.Y_Test = None
         self.dataset = None
         self.file = file
+        self.groups = None
     
 
     def read_file(self):
@@ -83,7 +84,7 @@ class Data():
         )
 
 
-    def split_random_data(self):
+    def split_group_data(self):
         """
         splits the data into training and testing sets
 
@@ -91,6 +92,7 @@ class Data():
         x drops the columns label and saves the features.
         """
         y = self.dataset['label']
+        self.groups = self.dataset['run id']
         x = self.dataset.drop(columns=['label', 'gps condition',
                                        'run id', 'mission type',
                                        'location name'])
@@ -100,19 +102,21 @@ class Data():
         assert 'gps condition' not in x.columns, "gps condition was not dropped successfully"
         assert 'label' not in x.columns, "label was not dropped successfully"
 
-        X_Train, X_Test, Y_Train, Y_Test = train_test_split(
-            x,
-            y,
-            test_size=TEST_SIZE,
+        sgkf = StratifiedGroupKFold(
+            n_splits=5,
             shuffle=True,
-            random_state=SEED,
-            stratify = y
+            random_state=SEED
         )
 
-        self.X_Train = X_Train
-        self.X_Test = X_Test
-        self.Y_Train = Y_Train
-        self.Y_Test = Y_Test
+        train_idx, test_idx = next(
+            sgkf.split(x, y, groups=self.groups)
+        )
+
+        self.X_Train = x.iloc[train_idx]
+        self.X_Test  = x.iloc[test_idx]
+
+        self.Y_Train = y.iloc[train_idx]
+        self.Y_Test  = y.iloc[test_idx]
 
 
 class RandomForestModel():
@@ -125,8 +129,11 @@ class RandomForestModel():
             class_weight = 'balanced'
         )
 
-        # Stratified K-Fold cross-validator
-        self.skf = StratifiedKFold(n_splits = 5, shuffle = True, random_state = SEED)
+        self.sgkf = StratifiedGroupKFold(
+            n_splits=5,
+            shuffle=True,
+            random_state=SEED
+        )
     
     def train_model(self, data):
         """train the model and calculate its training time"""
@@ -171,7 +178,8 @@ class RandomForestModel():
             self.model,
             data.X_Train,
             data.Y_Train,
-            cv=self.skf,
+            groups=data.groups.iloc[data.X_Train.index],
+            cv=self.sgkf,
             scoring=SCORING
         )
 
@@ -217,7 +225,16 @@ if __name__ == "__main__":
     data = Data(FILE)
     data.read_file()
     data.data_clean()
-    data.split_random_data()
+    data.split_group_data()
+
+    train_runs = set(data.groups.iloc[data.X_Train.index])
+    test_runs = set(data.groups.iloc[data.X_Test.index])
+
+    print(f"Training runs ({len(train_runs)}): {sorted(train_runs)}")
+    print(f"Testing runs ({len(test_runs)}): {sorted(test_runs)}")
+
+    assert train_runs.isdisjoint(test_runs), \
+        "Run leakage detected!"
 
     print('\n----- Data Stats -----')
     print(f'Data shape: {data.dataset.shape}')
