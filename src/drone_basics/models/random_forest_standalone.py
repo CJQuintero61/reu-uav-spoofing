@@ -152,7 +152,6 @@ class RandomForestModel():
 
 
         self._set_model_size()
-        self.print_model_info()
 
         return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
     
@@ -176,7 +175,7 @@ class RandomForestModel():
             scoring=SCORING
         )
 
-        for metric in self.SCORING:
+        for metric in SCORING:
             cv_scores[f'{metric}_mean'] = results[f'test_{metric}'].mean()
             cv_scores[f'{metric}_std'] = results[f'test_{metric}'].std()
         
