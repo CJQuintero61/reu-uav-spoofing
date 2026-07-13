@@ -22,7 +22,7 @@ from pathlib import Path
 import json
 import pandas as pd
 
-from data_collection_module.spoof_types import RunGPSCondition 
+from spoof_types import RunGPSCondition 
 
 #Ros2 and px4 translation items
 from rosbag2_py  import SequentialReader, StorageOptions, ConverterOptions
@@ -452,8 +452,8 @@ def client(source_dir, csv_destination,
 if __name__ == "__main__":
 
     #Change with your file path
-    source = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset")
-    destination = Path("/home/mudsk/ros_csv")
+    source = Path("/home/reu-uav-spoofing/src/data_collection/dataset")
+    destination = Path("/home/reu-uav-spoofing/src/data_collection/converted_dataset")
     client_test = client(source, destination,
                          lat_meters=10, long_meters=15,
                          drift=5, jump=10,

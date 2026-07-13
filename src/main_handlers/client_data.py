@@ -1,6 +1,6 @@
 #import files
-from data_collection_module.run_data_collection import ScenarioSelection, RunFlightHandler
-from data_collection_module.autonomous_flight import DroneControl
+from run_data_collection import ScenarioSelection, RunFlightHandler
+from autonomous_flight import DroneControl
 
 import asyncio
 import time

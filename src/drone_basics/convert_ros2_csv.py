@@ -22,7 +22,7 @@ from pathlib import Path
 import json
 import pandas as pd
 
-from data_collection_module.spoof_types import RunGPSCondition 
+from spoof_types import RunGPSCondition 
 
 #Ros2 and px4 translation items
 from rosbag2_py  import SequentialReader, StorageOptions, ConverterOptions
@@ -307,9 +307,14 @@ class ReadAndConvert():
             spoof_type = metadata.loc[0, "scenario.spoof types"]
             spoof_cond = metadata.loc[0, "scenario.gps condition"]
 
+            row_label = 0
+            row_gps_condition = "normal"
+
             #If it's spoofed calcuate the new lat and long
             if spoof_cond == "spoofed":
                 if attack_start <= elapsed_time and elapsed_time <= attack_end:
+                    row_label = 1
+                    row_gps_condition = "spoofed"
                     gps_conditions = RunGPSCondition(rows)
                     new_lat, new_long = gps_conditions.select_condition(
                         lat_meters=lat_meters, long_meters=long_meters,
@@ -347,8 +352,8 @@ class ReadAndConvert():
                 "location name": metadata.loc[0,"scenario.location name"],
                 "lat": metadata.loc[0,"scenario.location.lat"],
                 "long": metadata.loc[0,"scenario.location.long"],
-                "label": metadata.loc[0,"label"],
-                "gps condition": metadata.loc[0,"scenario.gps condition"],
+                "label": row_label,
+                "gps condition": row_gps_condition,
                 "mission type": metadata.loc[0,"scenario.mission type"],
                 "flight duration":  metadata.loc[0,"scenario.flight duration"]
             })

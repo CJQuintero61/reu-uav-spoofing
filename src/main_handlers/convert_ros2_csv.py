@@ -22,7 +22,7 @@ from pathlib import Path
 import json
 import pandas as pd
 
-from data_collection_module.spoof_types import RunGPSCondition 
+from spoof_types import RunGPSCondition 
 
 #Ros2 and px4 translation items
 from rosbag2_py  import SequentialReader, StorageOptions, ConverterOptions

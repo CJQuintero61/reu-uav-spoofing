@@ -1,6 +1,6 @@
 #import files
-from data_collection_module.run_data_collection import ScenarioSelection, RunFlightHandler
-from data_collection_module.autonomous_flight import DroneControl
+from run_data_collection import ScenarioSelection, RunFlightHandler
+from autonomous_flight import DroneControl
 
 import asyncio
 import time
@@ -106,7 +106,7 @@ class RunHandlers():
             handler.create_folder()
             handler.save_data()
             print("\n-------- Successfully Created Dataset Folders --------")
-
+            handler.kill_mavsdk_server()
             print("\n-------- Started PX4 and Gazebo --------")
             px4_handler = handler.start_px4_gazebo()
 
@@ -148,6 +148,7 @@ class RunHandlers():
             handler.stop_ros_process(ros2_bag_handler)
             handler.copy_ulog()
             handler.stop_px4_process(px4_handler)
+            handler.kill_mavsdk_server()
             
             await asyncio.sleep(20)
 
