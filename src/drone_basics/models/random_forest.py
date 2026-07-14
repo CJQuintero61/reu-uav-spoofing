@@ -24,6 +24,8 @@ class RandomForestModel(AbstractModel):
 
     def train_model(self, data):
         """train the model and calculate its training time"""
+
+        print(f'\n-----Begin RF Model Training at {time.strftime("%H:%M:%S", time.localtime())}-----')
         start = time.time()
         self.model_fit = self.model.fit(data.X_Train, data.Y_Train)
         self.train_time = time.time() - start
@@ -31,6 +33,8 @@ class RandomForestModel(AbstractModel):
 
     def predict(self, data):
         """predict the labels for the test data and calculate its prediction time"""
+
+        print(f'\n-----Begin RF Model Prediction at {time.strftime("%H:%M:%S", time.localtime())}-----')
         start = time.time()
         self.model_prediction = self.model_fit.predict(data.X_Test)
         self.predict_time = time.time() - start

@@ -21,9 +21,9 @@ class ClientController():
         self.read_flight_data.data_clean()
         
         #Select data preperation based on model_type
-        if model_type == "mlp" or model_type == "xgboost" or model_type == "svc":
+        if model_type == "mlp" or model_type == "xgboost" or model_type == "svc" or model_type == "rf":
           self.data = self.read_flight_data.split_random_data()
-        elif model_type == "1d" or model_type == "lstm" or model_type == "rf":
+        elif model_type == "1d" or model_type == "lstm":
           self.data_deep_learning.split_data_by_run()
 
         """
