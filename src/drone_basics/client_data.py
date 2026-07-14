@@ -93,7 +93,7 @@ class RunHandlers():
         #Per flight run this
 
         print(f"\n-------- Running {total_flights} flight(s) --------")
-        for i in range(1, total_flights + 1):
+        for i in range(19, total_flights + 1):
             run_id = f"run_{i:03d}"
             print(f"\n-------- Flight {i} out of {total_flights}")
             

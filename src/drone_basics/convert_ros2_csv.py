@@ -452,8 +452,8 @@ def client(source_dir, csv_destination,
 if __name__ == "__main__":
 
     #Change with your file path
-    source = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset")
-    destination = Path("/home/mudsk/ros_csv")
+    source = Path("/home/cjquintero/reu-uav-spoofing/src/drone_basics/dataset")
+    destination = Path("/home/cjquintero/reu-uav-spoofing/data/parsed_30_flights_80-20")
     client_test = client(source, destination,
                          lat_meters=10, long_meters=15,
                          drift=5, jump=10,

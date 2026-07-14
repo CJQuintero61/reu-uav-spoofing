@@ -19,7 +19,6 @@ class SVCModel(AbstractModel):
     """
     SEED = 0
     ROUND_PRECISION = 4
-    SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
 
 
     def __init__(self):
@@ -49,9 +48,9 @@ class SVCModel(AbstractModel):
 
     def evaluate(self, data):
         self.accuracy= accuracy_score(data.Y_Test, self.model_prediction)
-        self.precision = precision_score(data.Y_Test, self.model_prediction, average="weighted")
-        self.recall = recall_score(data.Y_Test, self.model_prediction, average="weighted")
-        self.f1 = f1_score(data.Y_Test, self.model_prediction, average="weighted")
+        self.precision = precision_score(data.Y_Test, self.model_prediction)
+        self.recall = recall_score(data.Y_Test, self.model_prediction)
+        self.f1 = f1_score(data.Y_Test, self.model_prediction)
         self.confussion_max = confusion_matrix(data.Y_Test, self.model_prediction)
         self.mcc = matthews_corrcoef(data.Y_Test, self.model_prediction)
 
