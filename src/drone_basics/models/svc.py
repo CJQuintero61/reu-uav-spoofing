@@ -27,8 +27,15 @@ class SVCModel(AbstractModel):
         # pipeline for scaling and SVC model
         self.pipeline = Pipeline([
             ('scaler', StandardScaler()),
-            ('svc', SVC(kernel = 'rbf', class_weight = 'balanced', random_state=self.SEED))
+            ('svc', SVC(
+                kernel = 'rbf',
+                class_weight = None,            # default
+                C = 1.0,                        # default
+                gamma = 'scale',                # default
+                random_state=self.SEED))
         ])
+
+        print(f"DEBUG: actual SVC params -> {self.pipeline.named_steps['svc'].get_params()}")
     
 
     def train_model(self, data):
