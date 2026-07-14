@@ -6,6 +6,7 @@ This file implements the support vector classifier
 """
 import time
 import pickle
+import pandas as pd
 from abstracts import AbstractModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -29,10 +30,11 @@ class SVCModel(AbstractModel):
             ('scaler', StandardScaler()),
             ('svc', SVC(
                 kernel = 'rbf',
-                class_weight = None,            # default
+                class_weight = {0: 1, 1: 2},
                 C = 1.0,                        # default
                 gamma = 'scale',                # default
-                random_state=self.SEED))
+                random_state=self.SEED
+            ))
         ])
 
         print(f"DEBUG: actual SVC params -> {self.pipeline.named_steps['svc'].get_params()}")

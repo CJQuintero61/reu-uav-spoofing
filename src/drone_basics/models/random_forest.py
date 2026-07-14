@@ -19,7 +19,11 @@ class RandomForestModel(AbstractModel):
         super().__init__()
 
         # init the random forest model with 100 trees and balanced class weights for imbalanced data
-        self.model = RandomForestClassifier(n_estimators = 100, random_state = self.SEED, class_weight = 'balanced')
+        self.model = RandomForestClassifier(
+            n_estimators = 100,
+            random_state = self.SEED,
+            class_weight = 'balanced'
+        )
     
 
     def train_model(self, data):
