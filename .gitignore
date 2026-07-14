@@ -29,3 +29,5 @@ data/parsed_30_flights_80-20.zip
 src/drone_basics/dataset
 
 src/drone_basics/merged_30_runs_80-20.csv
+
+data/merged_30_runs_80-20.csv
