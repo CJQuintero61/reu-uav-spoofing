@@ -30,7 +30,7 @@ class SVCModel(AbstractModel):
             ('scaler', StandardScaler()),
             ('svc', SVC(
                 kernel = 'rbf',
-                class_weight = {0: 1, 1: 2},
+                class_weight = {0: 1, 1: 2},    # optimal weights for overall metric scores
                 C = 1.0,                        # default
                 gamma = 'scale',                # default
                 random_state=self.SEED
