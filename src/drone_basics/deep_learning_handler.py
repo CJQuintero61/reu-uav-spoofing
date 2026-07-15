@@ -50,13 +50,15 @@ class DataSetup():
         
         self.read_flight_data.X_Train = training.drop(columns=['label', 'gps condition',
                                        'run id', 'mission type',
-                                       'location name'])
+                                       'location name'], errors='ignore')
         self.read_flight_data.Y_Train = training['label']
 
         self.read_flight_data.X_Test = testing.drop(columns=['label', 'gps condition',
                                        'run id', 'mission type',
-                                       'location name'])
+                                       'location name'], errors='ignore')
         self.read_flight_data.Y_Test = testing['label']
+
+        print('Dropping columns: label, gps condition, run id, mission type, location name')
 
 if __name__ == "__main__":
     read_flight_data = ReadFlightData()
