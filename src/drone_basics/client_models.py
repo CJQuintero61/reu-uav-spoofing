@@ -21,9 +21,12 @@ class ClientController():
         self.read_flight_data.data_clean()
         
         #Select data preperation based on model_type
-        if model_type == "mlp" or model_type == "xgboost" or model_type == "svc" or model_type == "rf":
+        if model_type == "mlp" or model_type == "xgboost" or model_type == "svc":
+          print(f'\n-----Splitting Randomly-----')
           self.data = self.read_flight_data.split_random_data()
-        elif model_type == "1d" or model_type == "lstm":
+          
+        elif model_type == "1d" or model_type == "lstm" or model_type == 'rf':
+          print(f'\n-----Splitting by run-----')
           self.data_deep_learning.split_data_by_run()
 
         """
@@ -153,4 +156,4 @@ if __name__ == "__main__":
     print("client started")
     client = ClientController()
     #mlp, 1d, xgboost, lstm
-    client.client_code("svc")
+    client.client_code("rf")
