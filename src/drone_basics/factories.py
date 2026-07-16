@@ -3,56 +3,45 @@ from models.lstm_model import LSTMExecution
 from models.mlp import MLPModel
 from models.one_dim_Cnn import OneDimExecution
 from models.xg_boost import XGBoostModel
-from models.random_forest import RandomForestModel
-from models.svc import SVCModel
-
 
 #import action types
 from execute_action import TrainAction, TestAction, EvaluateAction
 
 #Model "Factory" creates/runs the model type
 class ModelFactory():    
-    def create(self, model_type, num_features, num_classes, epochs):
+    def create(self, model_type, num_features, num_classes, config):
         #A dictory that matchs the string variables
         #Avoids using if else and cases
         model_type = model_type.lower().strip()
         model_map = {
-            # svc
-            "svc" : lambda: SVCModel(),
-
-            # random forest
-            "rf" : lambda: RandomForestModel(),
-            "random forest" : lambda: RandomForestModel(),
-
             #XGBoost and every case
-            "xgboost" : lambda: XGBoostModel(),
-            "xg boost": lambda: XGBoostModel(),
+            "xgboost" : lambda: XGBoostModel(config=config),
+            "xg boost": lambda: XGBoostModel(config=config),
 
             #MLP
-            "mlp": lambda: MLPModel(),
+            "mlp": lambda: MLPModel(config=config),
 
             #1D Cnn to get every case
             "1d cnn": lambda: OneDimExecution(
-                num_features, num_classes, epochs
+                num_features, num_classes, config=config
                 ),
             "1d": lambda: OneDimExecution(
-                num_features, num_classes, epochs
+                num_features, num_classes, config=config
                 ),
             "one dim": lambda: OneDimExecution(
-                num_features, num_classes, epochs
+                num_features, num_classes, config=config
                 ),
             "one d": lambda: OneDimExecution(
-                num_features, num_classes, epochs
+                num_features, num_classes, config=config
                 ),
             
             #LSTM
             "lstm": lambda: LSTMExecution(
-                num_features, num_classes, epochs
+                num_features, num_classes, config=config
                 )
         }
         
         #Returns the the model type from the map
-        print(f"Running model {model_type}")
         return model_map[model_type]()
         
 #Factory to handle the action type that the models does
@@ -67,6 +56,5 @@ class ActionFactory():
         }
 
         #Return the type from the dictorty
-        print(f"Running type {action_type}")
         return action_map[action_type]()
     

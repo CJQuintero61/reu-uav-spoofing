@@ -31,7 +31,7 @@ from sklearn.preprocessing import StandardScaler
 class ReadFlightData():
     def __init__(self):
         self.director = os.path.dirname(__file__)
-        self.file_name = os.path.join(self.director, "merged_30_runs_80-20.csv")
+        self.file_name = os.path.join(self.director, "spoof_imbalance_0.07_chance.csv")
         self.dataset = pd.read_csv(self.file_name)
         
         nan_count = self.dataset.isnull().sum().sum()
@@ -41,22 +41,14 @@ class ReadFlightData():
     #Places them into an array.
     def data_clean(self):
         columns_to_drop = []
-        # drop columns that are constant across the entire dataset
         for col in self.dataset.columns:
-            if self.dataset[col].nunique() == 1 and col != 'label':
+            if self.dataset[col].nunique() == 1:
                 columns_to_drop.append(col)
-                print(f'Removing column {col}: constant across entire dataset')
-        
-        # drop columns that are constant across each run
-        constant_per_run = self.dataset.groupby('run id').nunique()
-        for col in constant_per_run.columns:
-            if (constant_per_run[col] == 1).all() and col != 'label':
-                columns_to_drop.append(col)
-                print(f'Removing column {col}: constant for a specific run')
+                print(f'Removing column {col}')
         
         #drop timestamp as well.
         columns_to_drop.append('gps_timestamp')
-        print('Removing column timestamp across entire dataset')
+        print('Removing column timestamp')
 
         #Drops these items from the dataset
         self.dataset.drop(columns=columns_to_drop, inplace=True)
@@ -78,9 +70,7 @@ class ReadFlightData():
         y = self.dataset['label']
         x = self.dataset.drop(columns=['label', 'gps condition',
                                        'run id', 'mission type',
-                                       'location name'], errors='ignore')
-
-        print('Dropping columns: label, gps condition, run id, mission type, location name')
+                                       'location name'])
 
         self.X_Train, self.X_Test, self.Y_Train, self.Y_Test = train_test_split(
             x,
@@ -88,7 +78,7 @@ class ReadFlightData():
             test_size=.20,
             shuffle=True,
             random_state=0,
-            stratify = y
+            stratify=y
         )
 
     #Note:
