@@ -2,7 +2,7 @@
 from read_data import ReadFlightData
 from factories import ModelFactory, ActionFactory
 from deep_learning_handler import DataSetup
-from parameter_dic import xg_boost_para, mlp_para, lstm_para, oneD_para
+from parameter_dic import xg_boost_para, mlp_para, lstm_para, oneD_para, rf_para, svc_para
 import os
 
 #Client code
@@ -163,4 +163,4 @@ if __name__ == "__main__":
     print("Client started\n")
     client = ClientController()
     #mlp, 1d, xgboost, lstm
-    client.client_code("mlp", 5, mlp_para)
+    client.client_code("rf", 5, rf_para)

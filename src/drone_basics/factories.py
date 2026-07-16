@@ -16,13 +16,6 @@ class ModelFactory():
         #Avoids using if else and cases
         model_type = model_type.lower().strip()
         model_map = {
-            # svc
-            "svc" : lambda: SVCModel(config=config),
-            
-            # RF
-            "rf" : lambda: RandomForestModel(config=config),
-            "random forest" : lambda: RandomForestModel(config=config),
-
             #XGBoost and every case
             "xgboost" : lambda: XGBoostModel(config=config),
             "xg boost": lambda: XGBoostModel(config=config),
@@ -47,7 +40,14 @@ class ModelFactory():
             #LSTM
             "lstm": lambda: LSTMExecution(
                 num_features, num_classes, config=config
-                )
+                ),
+        
+            # svc
+            "svc" : lambda: SVCModel(config=config),
+            
+            # RF
+            "rf" : lambda: RandomForestModel(config=config),
+            "random forest" : lambda: RandomForestModel(config=config)
         }
         
         #Returns the the model type from the map

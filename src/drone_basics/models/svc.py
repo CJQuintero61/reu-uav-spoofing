@@ -22,7 +22,7 @@ class SVCModel(AbstractModel):
     ROUND_PRECISION = 4
 
 
-    def __init__(self):
+    def __init__(self, config):
         super().__init__()
         
         # pipeline for scaling and SVC model

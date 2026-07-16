@@ -105,3 +105,48 @@ lstm_config_3 = {
 }
 
 lstm_para = [lstm_config_1, lstm_config_2, lstm_config_3]
+
+# SVC Params
+svc_config_1 = {
+    "C" : 1.0,
+    "kernel" : 'rbf',
+    "gamma" : 'scale'
+}
+
+svc_config_2 = {
+    "C" : 0.1,
+    "kernel" : 'rbf',
+    "gamma" : 'scale'
+}
+
+svc_config_3 = {
+    "C" : 10.0,
+    "kernel" : 'rbf',
+    "gamma" : 'scale'
+}
+
+svc_para = [svc_config_1, svc_config_2, svc_config_3]
+
+# RANDOM FOREST PARAMETERS
+# current baseline — unlimited depth, minimal leaf constraint
+rf_config_1 = {
+    "n_estimators": 100,
+    "max_depth": None,
+    "min_samples_leaf": 1
+}   
+
+# more trees, capped depth, stronger overfitting control
+rf_config_2 = {
+    "n_estimators": 200,
+    "max_depth": 10,
+    "min_samples_leaf": 5
+}
+
+# more trees, moderate depth cap, light overfitting control
+rf_config_3 = {
+    "n_estimators": 300,
+    "max_depth": 20,
+    "min_samples_leaf": 2
+}
+
+rf_para = [rf_config_1, rf_config_2, rf_config_3]

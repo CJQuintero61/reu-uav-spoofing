@@ -16,14 +16,18 @@ class RandomForestModel(AbstractModel):
     ROUND_PRECISION = 4
 
 
-    def __init__(self):
+    def __init__(self, config):
         super().__init__()
+        self.n_est = config["n_estimators"]
+        self.min_samples_leaf = config["min_samples_leaf"]
+        self.max_dep = config["max_depth"] 
 
         # init the random forest model with 100 trees and balanced class weights for imbalanced data
         self.model = RandomForestClassifier(
-            n_estimators = 100,
+            n_estimators = self.n_est,
+            min_samples_leaf = self.min_samples_leaf,
+            max_depth=self.max_dep,
             random_state = self.SEED,
-            class_weight = 'balanced'
         )
 
         print(f'DEBUG: Random Forest model parameters: {self.model.get_params()}')
@@ -34,7 +38,7 @@ class RandomForestModel(AbstractModel):
         print(f'\n-----Begin RF Model Training at {time.strftime("%H:%M:%S", time.localtime())}-----')
         start = time.time()
         self.model_fit = self.model.fit(data.X_Train, data.Y_Train)
-        self.train_time = time.time() - start
+        self.training_time = time.time() - start
     
 
     def predict(self, data):
@@ -43,7 +47,7 @@ class RandomForestModel(AbstractModel):
         print(f'\n-----Begin RF Model Prediction at {time.strftime("%H:%M:%S", time.localtime())}-----')
         start = time.time()
         self.model_prediction = self.model_fit.predict(data.X_Test)
-        self.predict_time = time.time() - start
+        self.testing_time = time.time() - start
         return self.model_prediction
     
 
@@ -55,26 +59,9 @@ class RandomForestModel(AbstractModel):
         self.confussion_max = confusion_matrix(data.Y_Test, self.model_prediction)
         self.mcc = matthews_corrcoef(data.Y_Test, self.model_prediction)
 
-        self.precision_per_class = precision_score(
-            data.Y_Test,
-            self.model_prediction,
-            average=None,
-            zero_division=0
-        )
-
-        self.recall_per_class = recall_score(
-            data.Y_Test,
-            self.model_prediction,
-            average=None,
-            zero_division=0
-        )
-
         self._set_model_size()
         self.print_model_info()
 
-        
-        importances = pd.Series(self.model_fit.feature_importances_, index=data.X_Train.columns)
-        print(importances.sort_values(ascending=False).head(10))
 
         return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
 
@@ -82,16 +69,16 @@ class RandomForestModel(AbstractModel):
     def _set_model_size(self):
         """calculate the size of the model in KB"""
         model_bytes = len(pickle.dumps(self.model_fit))
-        self.model_size_kb = model_bytes / 1024
+        self.model_size = model_bytes / 1024
     
 
     def print_model_info(self):
         """print the model information"""
 
         print("\nRandom Forest Model Information:")
-        print(f"Model Size:         {round(self.model_size_kb, self.ROUND_PRECISION)} KB")
-        print(f"Training Time:      {round(self.train_time, self.ROUND_PRECISION)} seconds")
-        print(f"Prediction Time:    {round(self.predict_time, self.ROUND_PRECISION)} seconds")
+        print(f"Model Size:         {round(self.model_size, self.ROUND_PRECISION)} KB")
+        print(f"Training Time:      {round(self.training_time, self.ROUND_PRECISION)} seconds")
+        print(f"Prediction Time:    {round(self.testing_time, self.ROUND_PRECISION)} seconds")
 
         print("\nRandom Forest Model Evaluation:")
         print(f"Random Forest Accuracy:  {round(self.accuracy, self.ROUND_PRECISION)}")
@@ -101,5 +88,3 @@ class RandomForestModel(AbstractModel):
         print(f"Random Forest MCC:       {round(self.mcc, self.ROUND_PRECISION)}")
         print(f"Random Forest Confusion Matrix:\n{self.confussion_max}")
 
-        print(f"\nPrecision per class: {self.precision_per_class}\n")
-        print(f"Recall per class: {self.recall_per_class}\n")
