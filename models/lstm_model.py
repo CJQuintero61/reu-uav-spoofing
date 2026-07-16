@@ -43,19 +43,21 @@ import numpy as np
 #Data reader helper
 from window_module import WindowingModule
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+import time 
+import os
 
 #LSTM Model implemented using PyTorch
 class LSTMModel(nn.Module):
-    def __init__(self, num_features, num_classes):
+    def __init__(self, num_features, num_classes, config):
         super().__init__()
         #Sets up LSTm 
         self.lstm = nn.LSTM(
             num_features,
-            hidden_size=64,
+            hidden_size=config["hidden_size"],
             batch_first=True
         )
 
-        self.full_connected = nn.Linear(64, num_classes)
+        self.full_connected = nn.Linear(config["hidden_size"], num_classes)
     
     def forward(self, x):
         #returned values from the model
@@ -65,17 +67,20 @@ class LSTMModel(nn.Module):
         return x
 
 class LSTMExecution(AbstractModel):
-    def __init__(self, num_features, num_classes, epochs):
+    def __init__(self, num_features, num_classes, config):
         super().__init__()
 
-        self.lstm_model = LSTMModel(num_features, num_classes)
+        self.lstm_model = LSTMModel(num_features, num_classes, config)
         self.num_features = num_features
         self.num_classes = num_classes
-        self.window_module = WindowingModule(10)
-        self.epochs = epochs
+        self.window_module = WindowingModule(config["window_size"])
+        self.epochs = config["epochs"]
+        self.learn_rate = config["learning_rate"]
+        self.bat_size = config["batch_size"]
 
     #Training section
     def train_model(self, data):
+        start_time = time.perf_counter()
         #Scale and change dataset to a sliding window
         data.scale_data()
         self.x_window, self.y_window = (
@@ -90,23 +95,42 @@ class LSTMExecution(AbstractModel):
         dataset = TensorDataset(x_tensor_data, y_tensor_data)
         
         #load data, assess and optimizes erros
-        loader = DataLoader(dataset, batch_size=32, shuffle=True)
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(self.lstm_model.parameters(), lr=0.0001)
+        loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=True)
+        class_weight = torch.tensor([1.0, 4.0]).float()
+        criterion = nn.CrossEntropyLoss(weight=class_weight)
+        optimizer = optim.Adam(self.lstm_model.parameters(), lr=self.learn_rate)
         
         #Train
         self.lstm_model.train()
         for epoch in range(self.epochs):
+            total_loss = 0
+
             for x_batch, y_batch in loader:
                 optimizer.zero_grad()
                 outputs = self.lstm_model(x_batch)
                 loss = criterion(outputs, y_batch)
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.lstm_model.parameters(), max_norm=1.0)
                 optimizer.step()
+
+                total_loss += loss.item()
+
+            print(f"Epoch {epoch + 1}, Loss: {total_loss / len(loader):.4f}")
+        
+        #Save the model size        
+        self.training_time = time.perf_counter() - start_time
+        torch.save(
+            self.lstm_model.state_dict(),
+            "lstm.pth"
+        )
+
+        self.model_size = os.path.getsize("lstm.pth") / 1024
+    
 
     #predict section (Currently uses the test data. Noting feed yet)
     def predict(self, data):
-         #Change dataset to a sliding window
+        start_time = time.perf_counter()
+        #Change dataset to a sliding window
         self.x_window, self.y_window = (
             self.window_module.create_window(
             data.X_Test, data.Y_Test)
@@ -117,7 +141,7 @@ class LSTMExecution(AbstractModel):
         x_tensor_data = torch.from_numpy(x_np_array).float()
         y_tensor_data = torch.from_numpy(self.y_window).long()
         dataset = TensorDataset(x_tensor_data, y_tensor_data)
-        loader = DataLoader(dataset, batch_size=32, shuffle=False)
+        loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=False)
 
         #Evaluates and gives teh metrics for the model later
         self.lstm_model.eval()
@@ -136,7 +160,8 @@ class LSTMExecution(AbstractModel):
         
                 self.predications = all_preds
                 self.y_test_window = all_labels
-
+        
+        self.testing_time = time.perf_counter() - start_time
         return self.predications, self.y_test_window
 
     def evaluate(self, data):
@@ -145,6 +170,19 @@ class LSTMExecution(AbstractModel):
         self.recall = recall_score(self.y_test_window, self.predications, average="weighted")
         self.f1 = f1_score(self.y_test_window, self.predications, average="weighted")
         self.confussion_max = confusion_matrix(self.y_test_window, self.predications)
+        
+        #Calculate the precision and recall per class
+        self.precision_per_class = precision_score(
+            self.y_test_window,
+            self.predications,
+            average=None
+        )
+
+        self.recall_per_class = recall_score(
+            self.y_test_window,
+            self.predications,
+            average=None
+        )
 
         #Print out the model matrics
         print(
@@ -152,5 +190,18 @@ class LSTMExecution(AbstractModel):
             f"Model LSTM Precision: {self.precision}\n",
             f"Model LSTM Recall: {self.recall}\n",
             f"Model LSTM F1: {self.f1}\n",
-            f"Model LSTM Confusion: {self.confussion_max}"
+            f"Model LSTM Confusion: {self.confussion_max}\n"
         )
+
+        #Prints for precision and recall
+        print(f"precision per class: {self.precision_per_class}\n")
+        print(f"Recall per class: {self.recall_per_class}\n")
+
+        #Print computional meterics
+        print(
+            f"Training Time: {self.training_time:.4f} seconds.\n",
+            f"Testing Time: {self.testing_time:.4f} seconds.\n",
+            f"Model Size (KB): {self.model_size:.2f}\n"
+        )
+        
+        
