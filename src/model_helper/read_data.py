@@ -31,7 +31,7 @@ from sklearn.preprocessing import StandardScaler
 class ReadFlightData():
     def __init__(self):
         self.director = os.path.dirname(__file__)
-        self.file_name = os.path.join(self.director, "imbalanced_data_80_20.csv")
+        self.file_name = os.path.join(self.director, "spoof_imbalance_0.07_chance.csv")
         self.dataset = pd.read_csv(self.file_name)
         
         nan_count = self.dataset.isnull().sum().sum()
@@ -78,7 +78,7 @@ class ReadFlightData():
             test_size=.20,
             shuffle=True,
             random_state=0,
-            stratify = y
+            stratify=y
         )
 
     #Note:
