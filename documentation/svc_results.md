@@ -10,6 +10,33 @@ I will continue using weights of {0: 1, 1: 2} since it performed better than {0:
 I will experiment with tuning C and gamma values. Note that if false alarms are not a big issue, then
 using balanced weights or {0: 1, 1: 4}, maximized recall at 100% but has many false alarms.
 
+NOTE: these results are all from tests before dropping columns that consistent during a specific run.
+
+## Overall Assessment
+
+The results of running the SVC are:
+
+SVC Model Information:
+Model Size:         6783.6797 KB
+Training Time:      3507.0513 seconds
+Prediction Time:    391.5716 seconds
+
+SVC Model Evaluation:
+SVC Accuracy:  0.9305
+SVC Precision: 0.5104
+SVC Recall:    0.8517
+SVC F1:        0.6383
+SVC MCC:       0.6267
+SVC Confusion Matrix:
+[[84950  5753]
+ [ 1044  5998]]
+
+The params used were
+
+- C = 1.0 (default)
+- gamma = 'scale' (default)
+- class weights = {0: 1, 1: 2}
+
 ### Default Params Baseline
 
 With default params, the model has a lot of misses and no false alarms.
