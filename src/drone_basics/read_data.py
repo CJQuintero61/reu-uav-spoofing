@@ -31,7 +31,7 @@ from sklearn.preprocessing import StandardScaler
 class ReadFlightData():
     def __init__(self):
         self.director = os.path.dirname(__file__)
-        self.file_name = os.path.join(self.director, "spoof_imbalance_0.07_chance.csv")
+        self.file_name = os.path.join(self.director, "merged_30_runs_80-20.csv")
         self.dataset = pd.read_csv(self.file_name)
         
         nan_count = self.dataset.isnull().sum().sum()

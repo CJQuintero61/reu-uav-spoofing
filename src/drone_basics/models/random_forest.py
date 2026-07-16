@@ -49,11 +49,25 @@ class RandomForestModel(AbstractModel):
 
     def evaluate(self, data):
         self.accuracy = accuracy_score(data.Y_Test, self.model_prediction)
-        self.precision = precision_score(data.Y_Test, self.model_prediction)
-        self.recall = recall_score(data.Y_Test, self.model_prediction)
-        self.f1 = f1_score(data.Y_Test, self.model_prediction)
+        self.precision = precision_score(data.Y_Test, self.model_prediction, average="weighted")
+        self.recall = recall_score(data.Y_Test, self.model_prediction, average="weighted")
+        self.f1 = f1_score(data.Y_Test, self.model_prediction, average="weighted")
         self.confussion_max = confusion_matrix(data.Y_Test, self.model_prediction)
         self.mcc = matthews_corrcoef(data.Y_Test, self.model_prediction)
+
+        self.precision_per_class = precision_score(
+            data.Y_Test,
+            self.model_prediction,
+            average=None,
+            zero_division=0
+        )
+
+        self.recall_per_class = recall_score(
+            data.Y_Test,
+            self.model_prediction,
+            average=None,
+            zero_division=0
+        )
 
         self._set_model_size()
         self.print_model_info()
@@ -86,3 +100,6 @@ class RandomForestModel(AbstractModel):
         print(f"Random Forest F1:        {round(self.f1, self.ROUND_PRECISION)}")
         print(f"Random Forest MCC:       {round(self.mcc, self.ROUND_PRECISION)}")
         print(f"Random Forest Confusion Matrix:\n{self.confussion_max}")
+
+        print(f"\nPrecision per class: {self.precision_per_class}\n")
+        print(f"Recall per class: {self.recall_per_class}\n")
