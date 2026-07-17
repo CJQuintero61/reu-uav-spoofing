@@ -109,20 +109,21 @@ lstm_para = [lstm_config_1, lstm_config_2, lstm_config_3]
 # SVC Params
 svc_config_1 = {
     "C" : 1.0,
-    "kernel" : 'rbf',
-    "gamma" : 'scale'
+    "gamma" : 'scale',
+    "class_weight" : None
 }
 
+# optimal weights for overall metric scores
 svc_config_2 = {
-    "C" : 0.1,
-    "kernel" : 'rbf',
-    "gamma" : 'scale'
+    "C" : 1.0,
+    "gamma" : 'scale',
+    "class_weight" : {0: 1, 1: 2}
 }
 
 svc_config_3 = {
-    "C" : 10.0,
-    "kernel" : 'rbf',
-    "gamma" : 'scale'
+    "C" : 1.0,
+    "gamma" : 'scale',
+    "class_weight" : 'balanced'
 }
 
 svc_para = [svc_config_1, svc_config_2, svc_config_3]

@@ -31,3 +31,8 @@ src/drone_basics/dataset
 src/drone_basics/merged_30_runs_80-20.csv
 
 data/merged_30_runs_80-20.csv
+
+data/all_spoofed_30_flights
+
+data/all_spoofed_30_flights_parsed_runs.zip
+

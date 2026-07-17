@@ -453,7 +453,7 @@ if __name__ == "__main__":
 
     #Change with your file path
     source = Path("/home/cjquintero/reu-uav-spoofing/src/drone_basics/dataset")
-    destination = Path("/home/cjquintero/reu-uav-spoofing/data/parsed_30_flights_80-20")
+    destination = Path("/home/cjquintero/reu-uav-spoofing/data/all_spoofed_30_flights")
     client_test = client(source, destination,
                          lat_meters=10, long_meters=15,
                          drift=5, jump=10,

@@ -24,15 +24,18 @@ class SVCModel(AbstractModel):
 
     def __init__(self, config):
         super().__init__()
+        self.C = config["C"]
+        self.gamma = config["gamma"]
+        self.class_weight = config["class_weight"]
         
         # pipeline for scaling and SVC model
         self.pipeline = Pipeline([
             ('scaler', StandardScaler()),
             ('svc', SVC(
                 kernel = 'rbf',
-                class_weight = {0: 1, 1: 2},    # optimal weights for overall metric scores
-                C = 1.0,                        # default
-                gamma = 'scale',                # default
+                class_weight = self.class_weight,
+                C = self.C,
+                gamma = self.gamma,
                 random_state=self.SEED
             ))
         ])
