@@ -1,7 +1,7 @@
 #imports
 from read_data import ReadFlightData
 from factories import ModelFactory, ActionFactory
-from deep_learning_handler import DataSetup
+from run_splitter import DataSetup
 from parameter_dic import xg_boost_para, mlp_para, lstm_para, oneD_para
 import os
 
@@ -13,7 +13,7 @@ class ClientController():
         self.read_flight_data = ReadFlightData()
         self.model_factory = ModelFactory()
         self.action_factory = ActionFactory()
-        self.data_deep_learning = DataSetup(self.read_flight_data)
+        self.run_splitter = DataSetup(self.read_flight_data)
  
     def client_code(self, model_type, run_number, configs):
         """
@@ -48,7 +48,7 @@ class ClientController():
                 #For each run set data, create model and get results
                 for i in range(run_number):
                     print(f"Iteration {i} out of {run_number}")
-                    self.data_deep_learning.split_data_by_run()
+                    self.run_splitter.split_data_by_run()
 
                     """
                             MODEL PARAMETERS
@@ -94,6 +94,8 @@ class ClientController():
                         "precision" : model.precision,
                         "recall" : model.recall,
                         "f1" : model.f1,
+                        "confusion matrix": model.confussion_max,
+                        "spoof recall" : model.recall_per_class[1],
                         "training time" : model.training_time,
                         "testing time" : model.testing_time,
                         "model size" : model.model_size
@@ -106,6 +108,7 @@ class ClientController():
                 total_precision = 0
                 total_recall = 0
                 total_f1 = 0
+                total_spoof_recall = 0
                 total_training_time = 0
                 total_testing_time = 0
                 total_model_size = 0
@@ -116,6 +119,7 @@ class ClientController():
                     total_precision += dic["precision"]
                     total_recall += dic["recall"]
                     total_f1 += dic["f1"]
+                    total_spoof_recall += dic["spoof recall"]
                     total_training_time += dic["training time"]
                     total_testing_time += dic["testing time"]
                     total_model_size += dic["model size"]
@@ -126,6 +130,7 @@ class ClientController():
                     "Average Precision" : total_precision / len(all_model_runs),
                     "Average Recall" : total_recall / len(all_model_runs),
                     "Average F1" : total_f1 / len(all_model_runs),
+                    "Average F1": total_f1 / len(all_model_runs),
                     "Average Training Time" : total_training_time / len(all_model_runs),
                     "Average Testing Time" : total_testing_time / len(all_model_runs),
                     "Average Model Size" : total_model_size / len(all_model_runs)
@@ -144,8 +149,19 @@ class ClientController():
                 #Write into the .txt the results and the configurations parameters.
                 file.write(f"Configuration {config_amount}\n")
                 file.write(f"Parameters: {config_and_results['config']}\n")
-                file.write(f"Averages: \n")
                 
+                file.write(f"All Run Metrics: \n")
+                for run_num, run_metrics in enumerate(all_model_runs, start=1):
+                    file.write(f"Run {run_num}:\n")
+                    for metric, value in run_metrics.items():
+                        if metric == "confusion matrix":
+                            file.write(f"   {metric}:\n")
+                            file.write(f"{value}\n")
+                        else:
+                            file.write(f"   {metric}: {value:.6f}\n")
+                file.write("\n")
+                
+                file.write(f"Averages: \n")
                 for metric_name, value in config_and_results["average"].items():
                     file.write(f"   {metric_name}: {value:.6f}\n")
                                
@@ -162,5 +178,6 @@ class ClientController():
 if __name__ == "__main__":
     print("Client started\n")
     client = ClientController()
-    #mlp, 1d, xgboost, lstm
+    #For string argument: xgboost, mlp, lstm, 1d, 
+    #For third argument: xg_boost_para, mlp_para, lstm_para, oneD_para
     client.client_code("mlp", 5, mlp_para)
