@@ -1,0 +1,38 @@
+Model: rf
+Repeated 80/20 Evaluation for 5
+Configuration 1
+Parameters: {'n_estimators': 100, 'max_depth': None, 'min_samples_leaf': 1}
+Averages: 
+   Average Accuracy: 0.921511
+   Average Precision: 0.930532
+   Average Recall: 0.921511
+   Average F1: 0.918274
+   Average Training Time: 259.398416
+   Average Testing Time: 0.607132
+   Average Model Size: 7184.368359
+--------------------------------------------------
+
+Configuration 2
+Parameters: {'n_estimators': 200, 'max_depth': 10, 'min_samples_leaf': 5}
+Averages: 
+   Average Accuracy: 0.826949
+   Average Precision: 0.864601
+   Average Recall: 0.826949
+   Average F1: 0.807277
+   Average Training Time: 415.896851
+   Average Testing Time: 0.922246
+   Average Model Size: 2064.271680
+--------------------------------------------------
+
+Configuration 3
+Parameters: {'n_estimators': 300, 'max_depth': 20, 'min_samples_leaf': 2}
+Averages: 
+   Average Accuracy: 0.884880
+   Average Precision: 0.907421
+   Average Recall: 0.884880
+   Average F1: 0.874745
+   Average Training Time: 683.150451
+   Average Testing Time: 1.456107
+   Average Model Size: 14993.478711
+--------------------------------------------------
+
