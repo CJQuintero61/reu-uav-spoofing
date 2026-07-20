@@ -1,0 +1,224 @@
+Model: mlp
+Repeated 80/20 Evaluation for 5
+Configuration 1
+Parameters: {'hidden_layer_sizes': (64, 32), 'learning_rate_init': 0.001, 'max_iter': 300}
+All Run Metrics: 
+Run 1:
+   accuracy: 0.843724
+   precision: 0.849783
+   recall: 0.843724
+   f1: 0.837069
+   confusion matrix:
+[[59468  2853]
+ [12407 22920]]
+   spoof recall: 0.648796
+   training time: 220.650782
+   testing time: 0.435832
+   model size: 106.997070
+Run 2:
+   accuracy: 0.878360
+   precision: 0.909004
+   recall: 0.878360
+   f1: 0.880725
+   confusion matrix:
+[[50508 11880]
+ [    0 35277]]
+   spoof recall: 1.000000
+   training time: 417.214162
+   testing time: 0.452491
+   model size: 108.019531
+Run 3:
+   accuracy: 0.822406
+   precision: 0.860808
+   recall: 0.822406
+   f1: 0.803694
+   confusion matrix:
+[[63992     0]
+ [17655 17765]]
+   spoof recall: 0.501553
+   training time: 202.954438
+   testing time: 0.326696
+   model size: 107.201172
+Run 4:
+   accuracy: 0.764052
+   precision: 0.800557
+   recall: 0.764052
+   f1: 0.731754
+   confusion matrix:
+[[61959  1284]
+ [21968 13336]]
+   spoof recall: 0.377748
+   training time: 137.166172
+   testing time: 0.113257
+   model size: 107.126953
+Run 5:
+   accuracy: 0.752029
+   precision: 0.746731
+   recall: 0.752029
+   f1: 0.747127
+   confusion matrix:
+[[53769  9672]
+ [14918 20806]]
+   spoof recall: 0.582410
+   training time: 204.168501
+   testing time: 0.324644
+   model size: 107.796875
+
+Averages: 
+   Average Accuracy: 0.812114
+   Average Precision: 0.833377
+   Average Recall: 0.812114
+   Average F1: 0.800074
+   Average Training Time: 236.430811
+   Average Testing Time: 0.330584
+   Average Model Size: 107.428320
+--------------------------------------------------
+
+Configuration 2
+Parameters: {'hidden_layer_sizes': (128, 64), 'learning_rate_init': 0.001, 'max_iter': 500}
+All Run Metrics: 
+Run 1:
+   accuracy: 0.877675
+   precision: 0.885624
+   recall: 0.877675
+   f1: 0.872905
+   confusion matrix:
+[[60513  1526]
+ [10337 24603]]
+   spoof recall: 0.704150
+   training time: 765.759883
+   testing time: 1.599644
+   model size: 333.322266
+Run 2:
+   accuracy: 0.820916
+   precision: 0.859931
+   recall: 0.820916
+   f1: 0.801984
+   confusion matrix:
+[[63236     2]
+ [17631 17593]]
+   spoof recall: 0.499461
+   training time: 624.309086
+   testing time: 0.896995
+   model size: 333.470703
+Run 3:
+   accuracy: 0.856367
+   precision: 0.881328
+   recall: 0.856367
+   f1: 0.846243
+   confusion matrix:
+[[62314   130]
+ [13959 21687]]
+   spoof recall: 0.608399
+   training time: 912.495147
+   testing time: 0.808843
+   model size: 333.821289
+Run 4:
+   accuracy: 0.769003
+   precision: 0.830315
+   recall: 0.769003
+   f1: 0.732273
+   confusion matrix:
+[[62356     0]
+ [22531 12651]]
+   spoof recall: 0.359587
+   training time: 1424.932118
+   testing time: 2.105111
+   model size: 334.563477
+Run 5:
+   accuracy: 0.898887
+   precision: 0.898352
+   recall: 0.898887
+   f1: 0.898388
+   confusion matrix:
+[[58143  4183]
+ [ 5689 29618]]
+   spoof recall: 0.838870
+   training time: 485.189813
+   testing time: 0.546025
+   model size: 333.433594
+
+Averages: 
+   Average Accuracy: 0.844569
+   Average Precision: 0.871110
+   Average Recall: 0.844569
+   Average F1: 0.830359
+   Average Training Time: 842.537209
+   Average Testing Time: 1.191324
+   Average Model Size: 333.722266
+--------------------------------------------------
+
+Configuration 3
+Parameters: {'hidden_layer_sizes': (256, 128), 'learning_rate_init': 0.0005, 'max_iter': 500}
+All Run Metrics: 
+Run 1:
+   accuracy: 0.879790
+   precision: 0.898686
+   recall: 0.879790
+   f1: 0.873001
+   confusion matrix:
+[[62501    16]
+ [11754 23641]]
+   spoof recall: 0.667919
+   training time: 2081.710679
+   testing time: 8.867803
+   model size: 1169.462891
+Run 2:
+   accuracy: 0.880520
+   precision: 0.899238
+   recall: 0.880520
+   f1: 0.873643
+   confusion matrix:
+[[62671     3]
+ [11660 23281]]
+   spoof recall: 0.666295
+   training time: 3363.196376
+   testing time: 5.409941
+   model size: 1170.038086
+Run 3:
+   accuracy: 0.896519
+   precision: 0.895941
+   recall: 0.896519
+   f1: 0.895920
+   confusion matrix:
+[[58030  4166]
+ [ 5907 29239]]
+   spoof recall: 0.831930
+   training time: 1749.096606
+   testing time: 3.251287
+   model size: 1169.017578
+Run 4:
+   accuracy: 0.983879
+   precision: 0.984027
+   recall: 0.983879
+   f1: 0.983823
+   confusion matrix:
+[[62307   252]
+ [ 1327 34058]]
+   spoof recall: 0.962498
+   training time: 1887.033308
+   testing time: 4.931485
+   model size: 1169.409180
+Run 5:
+   accuracy: 0.879481
+   precision: 0.898398
+   recall: 0.879481
+   f1: 0.872693
+   confusion matrix:
+[[62562    25]
+ [11800 23730]]
+   spoof recall: 0.667886
+   training time: 2267.409327
+   testing time: 3.392681
+   model size: 1169.409180
+
+Averages: 
+   Average Accuracy: 0.904038
+   Average Precision: 0.915258
+   Average Recall: 0.904038
+   Average F1: 0.899816
+   Average Training Time: 2269.689259
+   Average Testing Time: 5.170639
+   Average Model Size: 1169.467383
+--------------------------------------------------
+

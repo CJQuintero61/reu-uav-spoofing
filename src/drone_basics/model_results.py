@@ -86,6 +86,29 @@ BOOST_METRICS = {
 }
 
 
+# Based on cnn_config_3 from parameter_dic.py due to highest F1 score
+MLP_METRICS = {
+    'accuracy': [0.879790, 0.880520, 0.896519, 0.983879, 0.879481],
+    'precision': [0.898686, 0.899238, 0.895941, 0.984027, 0.898398],
+    'recall': [0.879790, 0.880520,  0.896519, 0.983879, 0.879481],
+    'f1': [0.873001, 0.873643, 0.895920, 0.983823, 0.872693],
+    
+    # MCC had to be computed based on the confusion matricies for each run
+    # since it was not provided in the original results
+    'mcc': [0.7494, 0.7494, 0.7739, 0.9651, 0.7489],
+    'model_size': [1169.462891, 1170.038086, 1169.017578, 1169.409180, 1169.409180],
+    'training_time': [2081.710679, 3363.196376, 1749.096606, 1887.033308, 2267.409327],
+    'testing_time': [8.867803, 5.409941, 3.251287, 4.931485, 3.392681],
+
+    'confusion_matrices': [
+        [[62501, 16], [11754, 23641]],
+        [[62671, 3], [11660, 23281]],
+        [[58030, 4166], [5907, 29239]],
+        [[62307, 252], [1327, 34058]],
+        [[62562, 25], [11800, 23730]]
+    ]
+}
+
 
 '''
 def compute_mcc(cm) -> float:
@@ -123,4 +146,9 @@ if __name__ == "__main__":
         print(f"Boost Run {i+1} MCC: {mcc:.4f}")
     print()
 
+    mlp_mcc_values = [compute_mcc(cm) for cm in MLP_METRICS['confusion_matrices']]
+
+    for i, mcc in enumerate(mlp_mcc_values):
+        print(f"MLP Run {i+1} MCC: {mcc:.4f}")
+    print()
 '''
