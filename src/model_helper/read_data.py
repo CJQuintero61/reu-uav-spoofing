@@ -31,7 +31,7 @@ from sklearn.preprocessing import StandardScaler
 class ReadFlightData():
     def __init__(self):
         self.director = os.path.dirname(__file__)
-        self.file_name = os.path.join(self.director, "spoof_imbalance_0.07_chance.csv")
+        self.file_name = os.path.join(self.director, "all_spoofed_30_flights.csv")
         self.dataset = pd.read_csv(self.file_name)
         
         nan_count = self.dataset.isnull().sum().sum()
@@ -42,10 +42,16 @@ class ReadFlightData():
     def data_clean(self):
         columns_to_drop = []
         for col in self.dataset.columns:
-            if self.dataset[col].nunique() == 1:
+            if self.dataset[col].nunique() == 1 and col != 'label':
                 columns_to_drop.append(col)
                 print(f'Removing column {col}')
-        
+                print(f'Removing column {col}: constant across entire dataset')
+
+        constant_per_run = self.dataset.groupby('run id').nunique()
+        for col in constant_per_run.columns:
+            if(constant_per_run[col] == 1).all() and col != 'label':
+                columns_to_drop.append(col)
+                print(f'Removing column {col}: constant for a specific run')
         #drop timestamp as well.
         columns_to_drop.append('gps_timestamp')
         print('Removing column timestamp')
@@ -62,25 +68,7 @@ class ReadFlightData():
             .str.replace("]", "_", regex=False)
             .str.replace("<", "_", regex=False)
         )
-
-    #split the data where:
-    # y = 0 for real, 1 for spoof/malicious
-    # x drops the columns label and saves the features.
-    def split_random_data(self):
-        y = self.dataset['label']
-        x = self.dataset.drop(columns=['label', 'gps condition',
-                                       'run id', 'mission type',
-                                       'location name'])
-
-        self.X_Train, self.X_Test, self.Y_Train, self.Y_Test = train_test_split(
-            x,
-            y,
-            test_size=.20,
-            shuffle=True,
-            random_state=0,
-            stratify=y
-        )
-
+        
     #Note:
     # All models do not need to be scaled.
     # For the trianing data fit and transform
