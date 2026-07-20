@@ -151,4 +151,4 @@ rf_config_3 = {
     "min_samples_leaf": 2
 }
 
-rf_para = [rf_config_1, rf_config_2, rf_config_3]
+rf_para = [rf_config_1]
