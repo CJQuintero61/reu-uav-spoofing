@@ -126,10 +126,11 @@ svc_config_3 = {
     "class_weight" : 'balanced'
 }
 
-svc_para = [svc_config_1, svc_config_2, svc_config_3]
+svc_para = [svc_config_2]
 
 # RANDOM FOREST PARAMETERS
 # current baseline — unlimited depth, minimal leaf constraint
+# Best performance overall
 rf_config_1 = {
     "n_estimators": 100,
     "max_depth": None,

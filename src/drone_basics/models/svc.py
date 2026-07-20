@@ -49,7 +49,7 @@ class SVCModel(AbstractModel):
         print(f'\n-----Begin SVC Model Training at {time.strftime("%H:%M:%S", time.localtime())}-----')
         start = time.time()
         self.model_fit = self.pipeline.fit(data.X_Train, data.Y_Train)
-        self.train_time = time.time() - start
+        self.training_time = time.time() - start
     
 
     def predict(self, data):
@@ -58,7 +58,7 @@ class SVCModel(AbstractModel):
         print(f'\n-----Begin SVC Model Prediction at {time.strftime("%H:%M:%S", time.localtime())}-----')
         start = time.time()
         self.model_prediction = self.model_fit.predict(data.X_Test)
-        self.predict_time = time.time() - start
+        self.testing_time  = time.time() - start
         return self.model_prediction
 
 
@@ -79,16 +79,16 @@ class SVCModel(AbstractModel):
     def _set_model_size(self):
         """calculate the size of the model in KB"""
         model_bytes = len(pickle.dumps(self.model_fit))
-        self.model_size_kb = model_bytes / 1024
+        self.model_size = model_bytes / 1024
     
 
     def print_model_info(self):
         """print the model information"""
 
         print("\nSVC Model Information:")
-        print(f"Model Size:         {round(self.model_size_kb, self.ROUND_PRECISION)} KB")
-        print(f"Training Time:      {round(self.train_time, self.ROUND_PRECISION)} seconds")
-        print(f"Prediction Time:    {round(self.predict_time, self.ROUND_PRECISION)} seconds")
+        print(f"Model Size:         {round(self.model_size, self.ROUND_PRECISION)} KB")
+        print(f"Training Time:      {round(self.training_time, self.ROUND_PRECISION)} seconds")
+        print(f"Prediction Time:    {round(self.testing_time, self.ROUND_PRECISION)} seconds")
 
         print("\nSVC Model Evaluation:")
         print(f"SVC Accuracy:  {round(self.accuracy, self.ROUND_PRECISION)}")
