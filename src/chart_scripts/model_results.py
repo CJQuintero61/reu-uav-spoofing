@@ -6,7 +6,6 @@ NOTE:
 - Model size should be in KB
 - Training and testing time should be in seconds
 """
-
 from sklearn.metrics import matthews_corrcoef
 
 
@@ -110,6 +109,30 @@ MLP_METRICS = {
 }
 
 
+# Based on oneD_config_1 from parameter_dic.py due to highest F1 score
+CNN_METRICS = {
+    'accuracy': [0.848601, 0.869118, 0.793334, 0.869753, 0.882044],
+    'precision': [0.866260, 0.882848, 0.797096, 0.868829, 0.892640],
+    'recall': [0.848601, 0.869118, 0.793334, 0.869753, 0.882044],
+    'f1': [0.838936, 0.862323, 0.781786, 0.868947, 0.876901],
+
+    # MCC had to be computed based on the confusion matricies for each run
+    # since it was not provided in the original results
+    'mcc': [0.6759, 0.7199, 0.5380, 0.7154, 0.7467],
+    'model_size': [42.122070, 42.122070, 42.122070, 42.122070, 42.122070],
+    'training_time': [1900.415578, 1875.928859, 1864.702478, 1899.101089, 1862.505644],
+    'testing_time': [6.453155, 6.563831, 7.076974, 6.305374, 4.844289],
+
+    'confusion_matrices': [
+        [[60781, 1041], [13590, 21227]],
+        [[62575, 946], [12035, 23625]],
+        [[57764, 4286], [15761, 19191]],
+        [[56221, 5362], [7212, 27745]],
+        [[62440, 983], [10686, 24818]]
+    ]
+}
+
+
 '''
 def compute_mcc(cm) -> float:
     """
@@ -150,5 +173,11 @@ if __name__ == "__main__":
 
     for i, mcc in enumerate(mlp_mcc_values):
         print(f"MLP Run {i+1} MCC: {mcc:.4f}")
+    print()
+
+    cnn_mcc_values = [compute_mcc(cm) for cm in CNN_METRICS['confusion_matrices']]
+
+    for i, mcc in enumerate(cnn_mcc_values):
+        print(f"CNN Run {i+1} MCC: {mcc:.4f}")
     print()
 '''
