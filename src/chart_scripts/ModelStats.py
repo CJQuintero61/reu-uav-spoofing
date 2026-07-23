@@ -10,6 +10,14 @@ import matplotlib.pyplot as plt
 
 CHARTS_DIR = 'charts'
 BLUE_COLOR = '#4C72B0'
+FONT_SIZE = 12
+plt.rcParams.update({
+    'font.size': FONT_SIZE,
+    'axes.titlesize': FONT_SIZE + 2,
+    'axes.labelsize': FONT_SIZE,
+    'xtick.labelsize': FONT_SIZE,
+    'ytick.labelsize': FONT_SIZE,
+})
 
 class ModelStats:
     """
@@ -88,16 +96,16 @@ class ModelStats:
     def print_stats(self):
         
         # print the main metrics with mean and std deviation
-        print(f'\n{self.model_name} Accuracy: {self.scores["accuracy_mean"]:.4f} ± {self.scores["accuracy_std"]:.4f}')
-        print(f'{self.model_name} Precision: {self.scores["precision_mean"]:.4f} ± {self.scores["precision_std"]:.4f}')
-        print(f'{self.model_name} Recall: {self.scores["recall_mean"]:.4f} ± {self.scores["recall_std"]:.4f}')
-        print(f'{self.model_name} F1 Score: {self.scores["f1_mean"]:.4f} ± {self.scores["f1_std"]:.4f}')
-        print(f'{self.model_name} MCC: {self.scores["mcc_mean"]:.4f} ± {self.scores["mcc_std"]:.4f}')
+        print(f'\n{self.model_name} Accuracy: {self.scores["accuracy_mean"]:.3f} ± {self.scores["accuracy_std"]:.3f}')
+        print(f'{self.model_name} Precision: {self.scores["precision_mean"]:.3f} ± {self.scores["precision_std"]:.3f}')
+        print(f'{self.model_name} Recall: {self.scores["recall_mean"]:.3f} ± {self.scores["recall_std"]:.3f}')
+        print(f'{self.model_name} F1 Score: {self.scores["f1_mean"]:.3f} ± {self.scores["f1_std"]:.3f}')
+        print(f'{self.model_name} MCC: {self.scores["mcc_mean"]:.3f} ± {self.scores["mcc_std"]:.3f}')
         
         # print the additional metrics with mean and std deviation
-        print(f'\n{self.model_name} Model Size (KB): {self.scores["model_size_mean"]:.4f} ± {self.scores["model_size_std"]:.4f}')
-        print(f'{self.model_name} Training Time (s): {self.scores["training_time_mean"]:.4f} ± {self.scores["training_time_std"]:.4f}')
-        print(f'{self.model_name} Testing Time (s): {self.scores["testing_time_mean"]:.4f} ± {self.scores["testing_time_std"]:.4f}')
+        print(f'\n{self.model_name} Model Size (KB): {self.scores["model_size_mean"]:.3f} ± {self.scores["model_size_std"]:.3f}')
+        print(f'{self.model_name} Training Time (s): {self.scores["training_time_mean"]:.3f} ± {self.scores["training_time_std"]:.3f}')
+        print(f'{self.model_name} Testing Time (s): {self.scores["testing_time_mean"]:.3f} ± {self.scores["testing_time_std"]:.3f}')
     
 
     def plot_scoring_metrics(self):
@@ -141,12 +149,12 @@ class ModelStats:
                 bar.get_x() + bar.get_width() / 2,
                 label_y,
                 f'{mean:.3f}',
-                ha='center', va='bottom', fontsize=9
+                ha='center', va='bottom', fontsize=FONT_SIZE
             )
 
         ax.set_xticks(x)
-        ax.set_xticklabels(labels)
-        ax.set_ylabel('Score')
+        ax.set_xticklabels(labels, fontsize=FONT_SIZE)
+        ax.set_ylabel('Score', fontsize=FONT_SIZE)
 
         # fixed y-axis ticks for consistency across all model charts
         ax.set_yticks(np.arange(0, 1.01, 0.2))
@@ -156,7 +164,8 @@ class ModelStats:
 
         tallest_label = max(m + s for m, s in zip(means, stds)) + 0.12
         ax.set_ylim(0, max(1.0, tallest_label))
-        ax.set_title(f'{self.model_name} Cross-Validation Metrics (Mean ± Std)')
+        ax.tick_params(axis='both', labelsize=FONT_SIZE)
+        ax.set_title(f'{self.model_name} Cross-Validation Metrics (Mean ± Std)', fontsize=FONT_SIZE + 2)
         ax.grid(axis='y', linestyle='--', alpha=0.4)
 
         plt.tight_layout()

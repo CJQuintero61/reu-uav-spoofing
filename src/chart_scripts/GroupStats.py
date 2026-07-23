@@ -9,7 +9,14 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ModelStats import ModelStats, BLUE_COLOR, CHARTS_DIR
+from ModelStats import ModelStats, BLUE_COLOR, CHARTS_DIR, FONT_SIZE
+plt.rcParams.update({
+    'font.size': FONT_SIZE,
+    'axes.titlesize': FONT_SIZE + 2,
+    'axes.labelsize': FONT_SIZE,
+    'xtick.labelsize': FONT_SIZE,
+    'ytick.labelsize': FONT_SIZE,
+})
 
 
 class GroupStats:
@@ -97,7 +104,7 @@ class GroupStats:
                 bar.get_x() + bar.get_width() / 2,
                 label_y,
                 f'{mean:.0f}',
-                ha='center', va='bottom', fontsize=9
+                ha='center', va='bottom', fontsize=FONT_SIZE
             )
 
         ax.set_xticks(x)
@@ -169,7 +176,7 @@ class GroupStats:
                 bar.get_x() + bar.get_width() / 2,
                 label_y,
                 f'{mean:.1f}',
-                ha='center', va='bottom', fontsize=9
+                ha='center', va='bottom', fontsize=FONT_SIZE
             )
 
         ax.set_xticks(x)
@@ -241,7 +248,7 @@ class GroupStats:
                 bar.get_x() + bar.get_width() / 2,
                 label_y,
                 f'{mean:.1f}',
-                ha='center', va='bottom', fontsize=9
+                ha='center', va='bottom', fontsize=FONT_SIZE
             )
 
         ax.set_xticks(x)
@@ -315,7 +322,7 @@ class GroupStats:
                 bar.get_x() + bar.get_width() / 2,
                 label_y,
                 f'{mean:.1f}',
-                ha='center', va='bottom', fontsize=9
+                ha='center', va='bottom', fontsize=FONT_SIZE
             )
 
         ax.set_xticks(x)
@@ -389,7 +396,7 @@ class GroupStats:
                 bar.get_x() + bar.get_width() / 2,
                 label_y,
                 f'{mean:.1f}',
-                ha='center', va='bottom', fontsize=9
+                ha='center', va='bottom', fontsize=FONT_SIZE
             )
 
         ax.set_xticks(x)
@@ -464,7 +471,7 @@ class GroupStats:
                 bar.get_x() + bar.get_width() / 2,
                 label_y,
                 f'{mean:.3f}',
-                ha='center', va='bottom', fontsize=9
+                ha='center', va='bottom', fontsize=FONT_SIZE
             )
 
         # mapping for dispaying the metric for the y axis and title
