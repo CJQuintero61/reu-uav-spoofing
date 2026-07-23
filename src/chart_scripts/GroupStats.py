@@ -9,7 +9,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ModelStats import ModelStats, BLUE_COLOR, CHARTS_DIR, FONT_SIZE
+from ModelStats import ModelStats, BLUE_COLOR, CHARTS_DIR, FONT_SIZE, FILE_FORMAT
 plt.rcParams.update({
     'font.size': FONT_SIZE,
     'axes.titlesize': FONT_SIZE + 2,
@@ -120,7 +120,7 @@ class GroupStats:
         plt.tight_layout()
 
         os.makedirs(CHARTS_DIR, exist_ok=True)
-        save_path = os.path.join(CHARTS_DIR, 'Size_Comparison.png')
+        save_path = os.path.join(CHARTS_DIR, f'Size_Comparison.{FILE_FORMAT}')
         plt.savefig(save_path, dpi=200)
     
 
@@ -192,7 +192,7 @@ class GroupStats:
         plt.tight_layout()
 
         os.makedirs(CHARTS_DIR, exist_ok=True)
-        save_path = os.path.join(CHARTS_DIR, 'Training_Time_Comparison.png')
+        save_path = os.path.join(CHARTS_DIR, f'Training_Time_Comparison.{FILE_FORMAT}')
         plt.savefig(save_path, dpi=200)
     
 
@@ -264,7 +264,7 @@ class GroupStats:
         plt.tight_layout()
 
         os.makedirs(CHARTS_DIR, exist_ok=True)
-        save_path = os.path.join(CHARTS_DIR, 'Testing_Time_Comparison.png')
+        save_path = os.path.join(CHARTS_DIR, f'Testing_Time_Comparison.{FILE_FORMAT}')
         plt.savefig(save_path, dpi=200)
     
 
@@ -338,7 +338,7 @@ class GroupStats:
         plt.tight_layout()
 
         os.makedirs(CHARTS_DIR, exist_ok=True)
-        save_path = os.path.join(CHARTS_DIR, 'Testing_Time_Comparison_No_SVC.png')
+        save_path = os.path.join(CHARTS_DIR, f'Testing_Time_Comparison_No_SVC.{FILE_FORMAT}')
         plt.savefig(save_path, dpi=200)
     
 
@@ -412,7 +412,7 @@ class GroupStats:
         plt.tight_layout()
 
         os.makedirs(CHARTS_DIR, exist_ok=True)
-        save_path = os.path.join(CHARTS_DIR, 'Training_Time_Comparison_No_SVC.png')
+        save_path = os.path.join(CHARTS_DIR, f'Training_Time_Comparison_No_SVC.{FILE_FORMAT}')
         plt.savefig(save_path, dpi=200)
     
 
@@ -499,5 +499,5 @@ class GroupStats:
         plt.tight_layout()
 
         os.makedirs(CHARTS_DIR, exist_ok=True)
-        save_path = os.path.join(CHARTS_DIR, f'{title_str}_Comparison.png')
+        save_path = os.path.join(CHARTS_DIR, f'{title_str}_Comparison.{FILE_FORMAT}')
         plt.savefig(save_path, dpi=200)

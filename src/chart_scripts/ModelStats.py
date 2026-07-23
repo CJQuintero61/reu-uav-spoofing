@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 CHARTS_DIR = 'charts'
 BLUE_COLOR = '#4C72B0'
 FONT_SIZE = 12
+FILE_FORMAT = 'png' # png, pdf, svg, etc.
 plt.rcParams.update({
     'font.size': FONT_SIZE,
     'axes.titlesize': FONT_SIZE + 2,
@@ -169,5 +170,5 @@ class ModelStats:
         ax.grid(axis='y', linestyle='--', alpha=0.4)
 
         plt.tight_layout()
-        save_path = os.path.join(CHARTS_DIR, f'{model_name_for_file}_Metrics.png')
+        save_path = os.path.join(CHARTS_DIR, f'{model_name_for_file}_Metrics.{FILE_FORMAT}')
         plt.savefig(save_path, dpi=200)
