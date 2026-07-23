@@ -57,7 +57,7 @@ class GroupStats:
         Plots a bar chart comparing the mean model sizes (in KB) across all models with error bars for std deviation.
         """
 
-        labels = ['SVC', 'Random Forest', 'XG Boost', '1D-CNN', 'MLP', 'LSTM']
+        labels = ['SVC', 'RF', 'XGBoost', '1D-CNN', 'MLP', 'LSTM']
         means = [
             self.svc.scores['model_size_mean'],
             self.rf.scores['model_size_mean'],
@@ -129,7 +129,7 @@ class GroupStats:
         Plots a bar chart comparing the mean training times (in seconds) across all models with error bars for std deviation.
         """
 
-        labels = ['SVC', 'Random Forest', 'XG Boost', '1D-CNN', 'MLP', 'LSTM']
+        labels = ['SVC', 'RF', 'XGBoost', '1D-CNN', 'MLP', 'LSTM']
         training_means = [
             self.svc.scores['training_time_mean'],
             self.rf.scores['training_time_mean'],
@@ -201,7 +201,7 @@ class GroupStats:
         Plots a bar chart comparing the mean testing times (in seconds) across all models with error bars for std deviation.
         """
 
-        labels = ['SVC', 'Random Forest', 'XG Boost', '1D-CNN', 'MLP', 'LSTM']
+        labels = ['SVC', 'RF', 'XGBoost', '1D-CNN', 'MLP', 'LSTM']
         testing_means = [
             self.svc.scores['testing_time_mean'],
             self.rf.scores['testing_time_mean'],
@@ -277,7 +277,7 @@ class GroupStats:
         to allow the other models to be more easily compared.
         """
 
-        labels = ['Random Forest', 'XG Boost', '1D-CNN', 'MLP', 'LSTM']
+        labels = ['RF', 'XGBoost', '1D-CNN', 'MLP', 'LSTM']
         testing_means = [
             self.rf.scores['testing_time_mean'],
             self.boost.scores['testing_time_mean'],
@@ -351,7 +351,7 @@ class GroupStats:
         to allow the other models to be more easily compared.
         """
 
-        labels = ['Random Forest', 'XG Boost', '1D-CNN', 'MLP', 'LSTM']
+        labels = ['RF', 'XGBoost', '1D-CNN', 'MLP', 'LSTM']
         training_means = [
             self.rf.scores['training_time_mean'],
             self.boost.scores['training_time_mean'],
@@ -426,7 +426,7 @@ class GroupStats:
         """
         key = key.lower()
 
-        labels = ['SVC', 'Random Forest', 'XG Boost', '1D-CNN', 'MLP', 'LSTM']
+        labels = ['SVC', 'RF', 'XGBoost', '1D-CNN', 'MLP', 'LSTM']
         means = [
             self.svc.scores[f'{key}_mean'],
             self.rf.scores[f'{key}_mean'],

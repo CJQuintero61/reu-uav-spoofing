@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 CHARTS_DIR = 'charts'
 BLUE_COLOR = '#4C72B0'
-FONT_SIZE = 12
+FONT_SIZE = 16
 FILE_FORMAT = 'png' # png, pdf, svg, etc.
 plt.rcParams.update({
     'font.size': FONT_SIZE,

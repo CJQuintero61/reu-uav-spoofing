@@ -27,7 +27,7 @@ def main():
 
     # Random Forest
     rf_stats = ModelStats(
-        model_name = 'Random Forest',
+        model_name = 'RF',
         accuracy = RF_METRICS['accuracy'],
         precision = RF_METRICS['precision'],
         recall = RF_METRICS['recall'],
@@ -42,7 +42,7 @@ def main():
 
     # XG Boost
     boost_stats = ModelStats(
-        model_name = 'XG Boost',
+        model_name = 'XGBoost',
         accuracy = BOOST_METRICS['accuracy'],
         precision = BOOST_METRICS['precision'],
         recall = BOOST_METRICS['recall'],
