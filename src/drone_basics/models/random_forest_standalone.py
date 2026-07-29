@@ -3,27 +3,29 @@ random_forest_standalone.py
 
 This script is a standalone implementation of the RF model
 
-To run:
-    python <filename>.py
+NOTE: This script was made specifically for the real_spoofed_data.csv. The model performs
+perfectly with 100% accuracy, precision, recall, F1, and MCC. The learning curve for F1 is also produced
+for analysis. This script and its results are not included or referenced in the final report or in the powerpoint.
 """
+
 import time
 import pickle
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, matthews_corrcoef
-from sklearn.model_selection import cross_validate, StratifiedKFold, train_test_split, StratifiedGroupKFold
+from sklearn.model_selection import train_test_split, learning_curve
+from sklearn.base import clone
+
 
 # testing and metric constants
 TEST_SIZE = 0.20
 SEED = 0
 ROUND_PRECISION = 4
-SCORING = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'matthews_corrcoef']
-FILE = '../../../data/all_run_datasets.csv'
+FILE = '../real_spoofed_data.csv'
 
-"""if using colab"""
-# from google.colab import drive
-# drive.mount('/content/drive')
-# file = '/content/drive/MyDrive/all_run_datasets.csv'
 
 class Data():
     """
@@ -40,7 +42,6 @@ class Data():
         self.Y_Test = None
         self.dataset = None
         self.file = file
-        self.groups = None
     
 
     def read_file(self):
@@ -64,10 +65,10 @@ class Data():
         for col in self.dataset.columns:
             if self.dataset[col].nunique() == 1 and col != 'label':
                 columns_to_drop.append(col)
-                print(f'Removing column {col}: constant column')
+                print(f'Removing constant column {col}')
         
         #drop timestamp as well.
-        columns_to_drop.append('gps_timestamp')
+        columns_to_drop.append('timestamp')
         print('Removing column timestamp')
 
         #Drops these items from the dataset
@@ -83,6 +84,10 @@ class Data():
             .str.replace("<", "_", regex=False)
         )
 
+        # convert the label column to binary values
+        self.dataset['label'] = self.dataset['label'].apply(lambda x: 0 if x == 'benign' else 1)
+        assert set(self.dataset['label'].unique()) == {0, 1}, "Label column conversion failed"
+    
 
     def split_group_data(self):
         """
@@ -91,33 +96,18 @@ class Data():
         y = 0 for normal, 1 for spoof/malicious
         x drops the columns label and saves the features.
         """
-        y = self.dataset['label']
-        self.groups = self.dataset['run id']
-        x = self.dataset.drop(columns=['label', 'gps condition',
-                                       'run id', 'mission type',
-                                       'location name'])
 
-        print(f'Dropping: {["label", "gps condition", "run id", "mission type", "location name"]} from Training/Testing sets')
-
-        assert 'gps condition' not in x.columns, "gps condition was not dropped successfully"
-        assert 'label' not in x.columns, "label was not dropped successfully"
-
-        sgkf = StratifiedGroupKFold(
-            n_splits=5,
-            shuffle=True,
-            random_state=SEED
+        # split the data into training and testing sets
+        self.X_Train, self.X_Test, self.Y_Train, self.Y_Test = train_test_split(
+            self.dataset.drop(columns=['label']),
+            self.dataset['label'],
+            test_size=TEST_SIZE,
+            random_state=SEED,
+            stratify=self.dataset['label']
         )
 
-        train_idx, test_idx = next(
-            sgkf.split(x, y, groups=self.groups)
-        )
-
-        self.X_Train = x.iloc[train_idx]
-        self.X_Test  = x.iloc[test_idx]
-
-        self.Y_Train = y.iloc[train_idx]
-        self.Y_Test  = y.iloc[test_idx]
-
+        assert 'label' not in self.X_Train.columns, "Label column found in training features"
+        assert 'label' not in self.X_Test.columns, "Label column found in testing features"
 
 class RandomForestModel():
     
@@ -125,15 +115,11 @@ class RandomForestModel():
         # init the random forest model with 100 trees and balanced class weights for imbalanced data
         self.model = RandomForestClassifier(
             n_estimators = 100,
-            random_state = SEED,
-            class_weight = 'balanced'
+            max_depth = None,
+            min_samples_leaf = 1,
+            random_state = SEED
         )
 
-        self.sgkf = StratifiedGroupKFold(
-            n_splits=5,
-            shuffle=True,
-            random_state=SEED
-        )
     
     def train_model(self, data):
         """train the model and calculate its training time"""
@@ -161,35 +147,6 @@ class RandomForestModel():
         self._set_model_size()
 
         return self.accuracy, self.precision, self.recall, self.f1, self.confussion_max
-    
-
-    def cross_validate(self, data) -> dict:
-        """
-        Perform cross validation on the model using the provided data.
-
-        Args:
-            data: The data to use for cross validation.
-
-        Returns:
-            A dictionary containing the cross validation results.
-        """
-        cv_scores = {}
-        results = cross_validate(
-            self.model,
-            data.X_Train,
-            data.Y_Train,
-            groups=data.groups.iloc[data.X_Train.index],
-            cv=self.sgkf,
-            scoring=SCORING
-        )
-
-        for metric in SCORING:
-            cv_scores[f'{metric}_mean'] = results[f'test_{metric}'].mean()
-            cv_scores[f'{metric}_std'] = results[f'test_{metric}'].std()
-        
-        self.cv_scores = cv_scores
-        
-        return cv_scores
 
 
     def _set_model_size(self):
@@ -214,10 +171,44 @@ class RandomForestModel():
         print(f"Random Forest MCC:       {round(self.mcc, ROUND_PRECISION)}")
         print(f"Random Forest Confusion Matrix:\n{self.confussion_max}")
 
-        print("\nCross Validation Scores:")
-        for metric in SCORING:
-            print(f"{metric} Mean: {round(self.cv_scores[f'{metric}_mean'], ROUND_PRECISION)}")
-            print(f"{metric} Std:  {round(self.cv_scores[f'{metric}_std'], ROUND_PRECISION)}\n")
+
+    def plot_learning_curve(self, trained_model, X_train, y_train, cv_splits=5):
+        """
+        Builds a learning curve using the same hyperparameters as trained_model,
+        evaluated only on X_train/y_train (aka it never touches X_Test).
+        """
+        # clone() copies hyperparameters only - NOT the fitted model
+        model = clone(trained_model)
+        cv_arg = cv_splits
+
+        train_sizes, train_scores, test_scores = learning_curve(
+            estimator=model,
+            X=X_train,
+            y=y_train,
+            cv=cv_arg,
+            scoring='f1',
+            train_sizes=np.linspace(0.1, 1.0, 10),
+            shuffle=True,
+            random_state=SEED,
+            n_jobs=-1
+        )
+
+        train_mean, train_std = train_scores.mean(axis=1), train_scores.std(axis=1)
+        test_mean, test_std = test_scores.mean(axis=1), test_scores.std(axis=1)
+
+        plt.figure(figsize=(8, 6))
+        plt.plot(train_sizes, train_mean, 'o-', color='tab:blue', label='Training F1')
+        plt.fill_between(train_sizes, train_mean - train_std, train_mean + train_std, alpha=0.15, color='tab:blue')
+        plt.plot(train_sizes, test_mean, 'o-', color='tab:orange', label='Cross-Validation F1')
+        plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, alpha=0.15, color='tab:orange')
+        plt.xlabel('Training Set Size')
+        plt.ylabel('F1 Score')
+        plt.title('Random Forest Learning Curve')
+        plt.legend(loc='best')
+        plt.grid(alpha=0.3)
+        plt.tight_layout()
+        plt.savefig('rf_learning_curve_f1.png', dpi=200)
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -227,15 +218,6 @@ if __name__ == "__main__":
     data.data_clean()
     data.split_group_data()
 
-    train_runs = set(data.groups.iloc[data.X_Train.index])
-    test_runs = set(data.groups.iloc[data.X_Test.index])
-
-    print(f"Training runs ({len(train_runs)}): {sorted(train_runs)}")
-    print(f"Testing runs ({len(test_runs)}): {sorted(test_runs)}")
-
-    assert train_runs.isdisjoint(test_runs), \
-        "Run leakage detected!"
-
     print('\n----- Data Stats -----')
     print(f'Data shape: {data.dataset.shape}')
     print(f'Normal label count: {data.dataset["label"].value_counts()[0]}')
@@ -244,6 +226,7 @@ if __name__ == "__main__":
     print(f'Training set shape: {data.X_Train.shape}')
     print(f'Testing set shape: {data.X_Test.shape}')
 
+    # probably a better way to do this but oh well
     for col in data.X_Train.columns:
         assert col in data.X_Test.columns, f"Column {col} exists in Training set but not in Testing set"
 
@@ -259,17 +242,24 @@ if __name__ == "__main__":
 
     rf = RandomForestModel()
 
-    print(f'\nBegin training at {time.strftime("%H:%M:%S", time.localtime())}')
     rf.train_model(data)
-    print('Training complete\n')
 
-    print(f'Begin cross-validation at {time.strftime("%H:%M:%S", time.localtime())}')
-    rf.cross_validate(data)
-    print('Cross-validation complete\n')
+    rf.plot_learning_curve(
+        trained_model=rf.model,   # same parameters as what actually got trained
+        X_train=data.X_Train,
+        y_train=data.Y_Train,
+        cv_splits=5
+    )
 
-    print(f'Begin prediction at {time.strftime("%H:%M:%S", time.localtime())}')
+    print("\nRandom Forest Feature Importances:")
+    importance = pd.Series(
+        rf.model_fit.feature_importances_,
+        index=data.X_Train.columns
+    ).sort_values(ascending=False)
+
+    print(importance.head(20))
+
     rf.predict(data)
-    print('Prediction complete\n')
 
     rf.evaluate(data)
     rf.print_model_info()
