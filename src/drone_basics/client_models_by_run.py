@@ -163,4 +163,4 @@ if __name__ == "__main__":
     print("Client started\n")
     client = ClientController()
     #mlp, 1d, xgboost, lstm
-    client.client_code("svc", 5, svc_para)
+    client.client_code("svc", 10, svc_para)
