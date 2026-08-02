@@ -1,0 +1,14 @@
+Model: svc
+Repeated 80/20 Evaluation for 10
+Configuration 1
+Parameters: {'C': 1.0, 'gamma': 'scale', 'class_weight': {0: 1, 1: 2}}
+Averages: 
+   Average Accuracy: 0.623681
+   Average Precision: 0.538381
+   Average Recall: 0.713051
+   Average F1: 0.571902
+   Average Training Time: 6808.600721
+   Average Testing Time: 1736.719691
+   Average Model Size: 27808.354883
+--------------------------------------------------
+
