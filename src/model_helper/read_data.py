@@ -52,6 +52,7 @@ class ReadFlightData():
             if(constant_per_run[col] == 1).all() and col != 'label':
                 columns_to_drop.append(col)
                 print(f'Removing column {col}: constant for a specific run')
+       
         #drop timestamp as well.
         columns_to_drop.append('gps_timestamp')
         print('Removing column timestamp')

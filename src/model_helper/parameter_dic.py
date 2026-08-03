@@ -3,19 +3,22 @@
 xg_config_1 = {
     "n_estimators" : 100,
     "learning_rate" : 0.05,
-    "max_depth" : 3
+    "max_depth" : 3,
+    "scale_pos_weight" : 10
 }
-#balanced
+#balanced DID THE BEST SO FIND IT IN BETWEEN CONFIG 2 AND 3
 xg_config_2 = {
     "n_estimators" : 200,
     "learning_rate" : 0.1,
-    "max_depth" : 6
+    "max_depth" : 6,
+    "scale_pos_weight" : 15
 }
 #stronger
 xg_config_3 = {
     "n_estimators" : 300,
     "learning_rate" : 0.05,
-    "max_depth" : 8
+    "max_depth" : 8,
+    "scale_pos_weight" : 25
 }
 
 xg_boost_para = [xg_config_1, xg_config_2, xg_config_3]
@@ -35,7 +38,7 @@ mlp_config_2 = {
     "max_iter" : 500
 }
 
-#large
+#large (Did the best)
 mlp_config_3 = {
     "hidden_layer_sizes" : (256, 128),
     "learning_rate_init" : 0.0005,
@@ -46,7 +49,7 @@ mlp_para = [mlp_config_1, mlp_config_2, mlp_config_3]
 
 
 #1D CNN PARAMETERS
-#Small
+#Small (Did the best)
 oneD_config_1 = {
     "epochs" : 20,    
     "learning_rate" : 0.001,
@@ -86,7 +89,7 @@ lstm_config_1 = {
     "window_size" : 10
 }
 
-#Medium
+#Medium (Best one)
 lstm_config_2 = {
     "epochs" : 30,
     "learning_rate" : 0.0005,
