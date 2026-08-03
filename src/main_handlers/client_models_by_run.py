@@ -4,6 +4,7 @@ from factories import ModelFactory, ActionFactory
 from run_splitter import DataSetup
 from parameter_dic import xg_boost_para, mlp_para, lstm_para, oneD_para
 import os
+from real_data_reader import ReadRealFlightData
 
 #Client code
 class ClientController():
@@ -14,6 +15,7 @@ class ClientController():
         self.model_factory = ModelFactory()
         self.action_factory = ActionFactory()
         self.run_splitter = DataSetup(self.read_flight_data)
+        self.real_data = ReadRealFlightData()
  
     def client_code(self, model_type, run_number, configs):
         """
@@ -21,6 +23,7 @@ class ClientController():
         """
         #Prepare the data and results for models and comparison.
         model_type = model_type.lower().strip()
+        #self.real_data.data_clean()
         self.read_flight_data.data_clean()
 
         config_amount = 1
@@ -28,8 +31,11 @@ class ClientController():
 
         #Makes the folder results found in ros2_drone_ws
 
-        folder = "results"
-        filename = os.path.join(folder, f"{model_type}_results.txt")
+        #folder = "results_real_data"
+        folder = "results_30"
+        #folder = "results"
+        filename = os.path.join(folder, f"{model_type}_results_30.txt")
+        #filename = os.path.join(folder, f"{model_type}_results.txt")
         print(f"Saving results to: {filename}")
         
         print(f"Starting Model: {model_type}")
@@ -47,13 +53,18 @@ class ClientController():
                 
                 #For each run set data, create model and get results
                 for i in range(run_number):
-                    print(f"Iteration {i} out of {run_number}")
+                    print(f"Iteration {i + 1} out of {run_number}")
+                    #IF doing by run
                     self.run_splitter.split_data_by_run()
+                    #self.real_data.split_random_data(random_state=i)
 
                     """
                             MODEL PARAMETERS
                     """
                     #For all model types
+                    """self.x_train = self.real_data.X_Train
+                    self.y_train = self.real_data.Y_Train"""
+
                     self.x_train = self.read_flight_data.X_Train
                     self.y_train = self.read_flight_data.Y_Train
 
@@ -85,10 +96,16 @@ class ClientController():
                     test = self.action_factory.create("test")
                     evaluate = self.action_factory.create("evaluate")
                     
+                    """
+                    train.execute(model, self.real_data)
+                    test.execute(model, self.real_data)
+                    evaluate.execute(model, self.real_data)
+                    """
+
                     train.execute(model, self.read_flight_data)
                     test.execute(model, self.read_flight_data)
                     evaluate.execute(model, self.read_flight_data)
-
+                    
                     model_run_met = {
                         "accuracy" : model.accuracy,
                         "precision" : model.precision,
@@ -180,4 +197,4 @@ if __name__ == "__main__":
     client = ClientController()
     #For string argument: xgboost, mlp, lstm, 1d, 
     #For third argument: xg_boost_para, mlp_para, lstm_para, oneD_para
-    client.client_code("mlp", 5, mlp_para)
+    client.client_code("1d", 30, oneD_para)
