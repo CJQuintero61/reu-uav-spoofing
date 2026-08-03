@@ -1,0 +1,503 @@
+Run 1
+Random Forest Model Information:
+Model Size:         6247.6035 KB
+Training Time:      205.0529 seconds
+Prediction Time:    0.4938 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.849
+Random Forest Precision: 0.8778
+Random Forest Recall:    0.849
+Random Forest F1:        0.8368
+Random Forest MCC:       0.6843
+Random Forest Confusion Matrix:
+[[62375     0]
+ [14669 20128]]
+
+
+Run 2
+Random Forest Model Information:
+Model Size:         6334.6084 KB
+Training Time:      198.6898 seconds
+Prediction Time:    0.5044 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8896
+Random Forest Precision: 0.9044
+Random Forest Recall:    0.8896
+Random Forest F1:        0.8842
+Random Forest MCC:       0.7669
+Random Forest Confusion Matrix:
+[[63079   166]
+ [10697 24491]]
+
+
+Run 3
+Random Forest Model Information:
+Model Size:         7354.749 KB
+Training Time:      217.4212 seconds
+Prediction Time:    0.4943 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.9801
+Random Forest Precision: 0.9807
+Random Forest Recall:    0.9801
+Random Forest F1:        0.98
+Random Forest MCC:       0.9572
+Random Forest Confusion Matrix:
+[[61942     0]
+ [ 1929 33045]]
+
+
+Run 4
+Random Forest Model Information:
+Model Size:         7794.333 KB
+Training Time:      220.5838 seconds
+Prediction Time:    1.5619 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.9813
+Random Forest Precision: 0.982
+Random Forest Recall:    0.9813
+Random Forest F1:        0.9814
+Random Forest MCC:       0.9603
+Random Forest Confusion Matrix:
+[[61312  1709]
+ [  129 35099]]
+
+
+Run 5
+Random Forest Model Information:
+Model Size:         7138.3428 KB
+Training Time:      208.1561 seconds
+Prediction Time:    0.5238 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.993
+Random Forest Precision: 0.9931
+Random Forest Recall:    0.993
+Random Forest F1:        0.993
+Random Forest MCC:       0.985
+Random Forest Confusion Matrix:
+[[61985     0]
+ [  678 34606]]
+
+
+Run 6
+Random Forest Model Information:
+Model Size:         5860.9795 KB
+Training Time:      207.3014 seconds
+Prediction Time:    0.4146 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8787
+Random Forest Precision: 0.898
+Random Forest Recall:    0.8787
+Random Forest F1:        0.8716
+Random Forest MCC:       0.7457
+Random Forest Confusion Matrix:
+[[62943     0]
+ [11884 23183]]
+
+
+Run 7
+Random Forest Model Information:
+Model Size:         6549.375 KB
+Training Time:      196.0831 seconds
+Prediction Time:    0.4493 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8793
+Random Forest Precision: 0.8985
+Random Forest Recall:    0.8793
+Random Forest F1:        0.8723
+Random Forest MCC:       0.7479
+Random Forest Confusion Matrix:
+[[62697     0]
+ [11830 23476]]
+
+
+Run 8
+Random Forest Model Information:
+Model Size:         5399.0605 KB
+Training Time:      205.3679 seconds
+Prediction Time:    0.5133 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8145
+Random Forest Precision: 0.8561
+Random Forest Recall:    0.8145
+Random Forest F1:        0.7939
+Random Forest MCC:       0.6121
+Random Forest Confusion Matrix:
+[[63000     0]
+ [18224 17029]]
+
+
+Run 9
+Random Forest Model Information:
+Model Size:         6613.3936 KB
+Training Time:      211.3631 seconds
+Prediction Time:    0.6032 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8812
+Random Forest Precision: 0.8997
+Random Forest Recall:    0.8812
+Random Forest F1:        0.8744
+Random Forest MCC:       0.7511
+Random Forest Confusion Matrix:
+[[63178     0]
+ [11711 23647]]
+
+
+Run 10
+Random Forest Model Information:
+Model Size:         6621.6484 KB
+Training Time:      220.4449 seconds
+Prediction Time:    0.4549 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.919
+Random Forest Precision: 0.9281
+Random Forest Recall:    0.919
+Random Forest F1:        0.9163
+Random Forest MCC:       0.8296
+Random Forest Confusion Matrix:
+[[62423     0]
+ [ 7902 27284]]
+
+
+Run 11
+Random Forest Model Information:
+Model Size:         6029.874 KB
+Training Time:      208.3822 seconds
+Prediction Time:    0.4626 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.7585
+Random Forest Precision: 0.8246
+Random Forest Recall:    0.7585
+Random Forest F1:        0.7166
+Random Forest MCC:       0.488
+Random Forest Confusion Matrix:
+[[62853     0]
+ [23688 11559]]
+
+
+Run 12
+Random Forest Model Information:
+Model Size:         7817.0928 KB
+Training Time:      210.2974 seconds
+Prediction Time:    0.5134 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8266
+Random Forest Precision: 0.8266
+Random Forest Recall:    0.8266
+Random Forest F1:        0.8216
+Random Forest MCC:       0.616
+Random Forest Confusion Matrix:
+[[57263  4903]
+ [11987 23275]]
+
+
+Run 13
+Random Forest Model Information:
+Model Size:         6348.5322 KB
+Training Time:      211.6392 seconds
+Prediction Time:    0.4892 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8346
+Random Forest Precision: 0.8686
+Random Forest Recall:    0.8346
+Random Forest F1:        0.8194
+Random Forest MCC:       0.655
+Random Forest Confusion Matrix:
+[[63114     0]
+ [16289 19107]]
+
+
+Run 14
+Random Forest Model Information:
+Model Size:         7628.8467 KB
+Training Time:      222.5042 seconds
+Prediction Time:    0.5148 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.9991
+Random Forest Precision: 0.9991
+Random Forest Recall:    0.9991
+Random Forest F1:        0.9991
+Random Forest MCC:       0.998
+Random Forest Confusion Matrix:
+[[62964     0]
+ [   92 35001]]
+
+
+Run 15
+Random Forest Model Information:
+Model Size:         5594.2168 KB
+Training Time:      214.4654 seconds
+Prediction Time:    0.3975 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.878
+Random Forest Precision: 0.8975
+Random Forest Recall:    0.878
+Random Forest F1:        0.8709
+Random Forest MCC:       0.7453
+Random Forest Confusion Matrix:
+[[62295     0]
+ [11883 23222]]
+
+
+Run 16
+Random Forest Model Information:
+Model Size:         7687.9004 KB
+Training Time:      214.3997 seconds
+Prediction Time:    0.5557 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8778
+Random Forest Precision: 0.8974
+Random Forest Recall:    0.8778
+Random Forest F1:        0.8707
+Random Forest MCC:       0.7455
+Random Forest Confusion Matrix:
+[[62554     0]
+ [11984 23499]]
+
+
+Run 17
+Random Forest Model Information:
+Model Size:         7821.1904 KB
+Training Time:      200.6933 seconds
+Prediction Time:    0.4835 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.9362
+Random Forest Precision: 0.9408
+Random Forest Recall:    0.9362
+Random Forest F1:        0.9348
+Random Forest MCC:       0.8643
+Random Forest Confusion Matrix:
+[[61493   260]
+ [ 5910 29060]]
+
+
+Run 18
+Random Forest Model Information:
+Model Size:         5746.1357 KB
+Training Time:      205.8681 seconds
+Prediction Time:    0.5155 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8198
+Random Forest Precision: 0.8593
+Random Forest Recall:    0.8198
+Random Forest F1:        0.8007
+Random Forest MCC:       0.6238
+Random Forest Confusion Matrix:
+[[62533     0]
+ [17596 17498]]
+
+
+Run 19
+Random Forest Model Information:
+Model Size:         6394.4961 KB
+Training Time:      205.4314 seconds
+Prediction Time:    2.2005 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8851
+Random Forest Precision: 0.8909
+Random Forest Recall:    0.8851
+Random Forest F1:        0.8812
+Random Forest MCC:       0.7495
+Random Forest Confusion Matrix:
+[[61835  1714]
+ [ 9654 25704]]
+
+
+Run 20
+Random Forest Model Information:
+Model Size:         6504.3223 KB
+Training Time:      216.994 seconds
+Prediction Time:    0.4284 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8198
+Random Forest Precision: 0.8593
+Random Forest Recall:    0.8198
+Random Forest F1:        0.8007
+Random Forest MCC:       0.6235
+Random Forest Confusion Matrix:
+[[61842     0]
+ [17385 17246]]
+
+
+Run 21
+Random Forest Model Information:
+Model Size:         7429.333 KB
+Training Time:      222.5905 seconds
+Prediction Time:    0.5028 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.9125
+Random Forest Precision: 0.9126
+Random Forest Recall:    0.9125
+Random Forest F1:        0.9116
+Random Forest MCC:       0.8084
+Random Forest Confusion Matrix:
+[[59584  2777]
+ [ 5748 29341]]
+
+
+Run 22
+Random Forest Model Information:
+Model Size:         6389.0098 KB
+Training Time:      220.6078 seconds
+Prediction Time:    0.4106 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.9379
+Random Forest Precision: 0.9434
+Random Forest Recall:    0.9379
+Random Forest F1:        0.9365
+Random Forest MCC:       0.8692
+Random Forest Confusion Matrix:
+[[61989     0]
+ [ 6047 29358]]
+
+
+Run 23
+Random Forest Model Information:
+Model Size:         5647.0176 KB
+Training Time:      203.9339 seconds
+Prediction Time:    0.4692 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8167
+Random Forest Precision: 0.8575
+Random Forest Recall:    0.8167
+Random Forest F1:        0.797
+Random Forest MCC:       0.6181
+Random Forest Confusion Matrix:
+[[62673     0]
+ [17960 17363]]
+
+
+Run 24
+Random Forest Model Information:
+Model Size:         6199.1484 KB
+Training Time:      206.8785 seconds
+Prediction Time:    0.5502 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8172
+Random Forest Precision: 0.8579
+Random Forest Recall:    0.8172
+Random Forest F1:        0.7978
+Random Forest MCC:       0.6206
+Random Forest Confusion Matrix:
+[[62529     0]
+ [17926 17615]]
+
+
+Run 25
+Random Forest Model Information:
+Model Size:         6905.4863 KB
+Training Time:      201.7917 seconds
+Prediction Time:    0.4504 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8201
+Random Forest Precision: 0.8596
+Random Forest Recall:    0.8201
+Random Forest F1:        0.8013
+Random Forest MCC:       0.625
+Random Forest Confusion Matrix:
+[[62643     0]
+ [17606 17630]]
+
+
+Run 26
+Random Forest Model Information:
+Model Size:         7879.749 KB
+Training Time:      209.546 seconds
+Prediction Time:    0.4786 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.9407
+Random Forest Precision: 0.9458
+Random Forest Recall:    0.9407
+Random Forest F1:        0.9394
+Random Forest MCC:       0.8746
+Random Forest Confusion Matrix:
+[[61322     0]
+ [ 5692 29010]]
+
+
+Run 27
+Random Forest Model Information:
+Model Size:         8332.4844 KB
+Training Time:      234.9576 seconds
+Prediction Time:    0.4741 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  1.0
+Random Forest Precision: 1.0
+Random Forest Recall:    1.0
+Random Forest F1:        1.0
+Random Forest MCC:       1.0
+Random Forest Confusion Matrix:
+[[61962     0]
+ [    1 35090]]
+
+
+Run 28
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8969
+Random Forest Precision: 0.9113
+Random Forest Recall:    0.8969
+Random Forest F1:        0.8922
+Random Forest MCC:       0.7845
+Random Forest Confusion Matrix:
+[[61615     0]
+ [ 9944 24926]]
+
+
+Run 29
+Random Forest Model Information:
+Model Size:         7096.7451 KB
+Training Time:      220.7858 seconds
+Prediction Time:    0.467 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.921
+Random Forest Precision: 0.9297
+Random Forest Recall:    0.921
+Random Forest F1:        0.9184
+Random Forest MCC:       0.8338
+Random Forest Confusion Matrix:
+[[62079     0]
+ [ 7681 27421]]
+
+
+Run 30
+Random Forest Model Information:
+Model Size:         6349.1572 KB
+Training Time:      212.3812 seconds
+Prediction Time:    0.4215 seconds
+
+Random Forest Model Evaluation:
+Random Forest Accuracy:  0.8779
+Random Forest Precision: 0.8975
+Random Forest Recall:    0.8779
+Random Forest F1:        0.8708
+Random Forest MCC:       0.7458
+Random Forest Confusion Matrix:
+[[61721     0]
+ [11818 23213]]
