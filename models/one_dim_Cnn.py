@@ -41,6 +41,10 @@ import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 
+# GPU if available, otherwise CPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
 #Data reader helper
 from window_module import WindowingModule
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
@@ -76,7 +80,7 @@ class OneDimExecution(AbstractModel):
         self.num_features = num_features
         self.num_classes = num_classes
         self.window_module = WindowingModule(config["window_size"])
-        self.one_dim_model = OneDimCNN(num_features, num_classes, config=config)
+        self.one_dim_model = OneDimCNN(num_features, num_classes, config=config).to(device)
         self.epochs = config["epochs"]
         self.learn_rate = config["learning_rate"]
         self.bat_size = config["batch_size"]
@@ -97,10 +101,10 @@ class OneDimExecution(AbstractModel):
 
         #Convert to Tensor
         x_np_array = np.array(self.transpose_x_win)
-        x_tensor_data = torch.from_numpy(x_np_array).float()
-        y_tensor_data = torch.from_numpy(self.y_window).long()
+        x_tensor_data = torch.from_numpy(x_np_array).float().to(device)
+        y_tensor_data = torch.from_numpy(self.y_window).long().to(device)
         dataset = TensorDataset(x_tensor_data, y_tensor_data)
-        loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=True)
+        loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=True, pin_memory=True)
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.Adam(self.one_dim_model.parameters(), lr=self.learn_rate)
 
@@ -110,6 +114,8 @@ class OneDimExecution(AbstractModel):
         for epoch in range(self.epochs):
             total_loss = 0
             for x_batch, y_batch in loader:
+                x_batch = x_batch.to(device)
+                y_batch = y_batch.to(device)
                 optimizer.zero_grad()
                 outputs = self.one_dim_model(x_batch)
                 loss = criterion(outputs, y_batch)
@@ -119,7 +125,7 @@ class OneDimExecution(AbstractModel):
                 total_loss += loss.item()
             print(f"Epoch {epoch + 1}, Loss: {total_loss / len(loader):.4f}")
 
-        #Save the model size
+        #Save the model size and time
         self.training_time = time.perf_counter() - start_time
         torch.save(
             self.one_dim_model.state_dict(),
@@ -143,10 +149,10 @@ class OneDimExecution(AbstractModel):
 
         #Convert to Tensor
         x_np_array = np.array(self.transpose_x_win)
-        x_tensor_data = torch.from_numpy(x_np_array).float()
-        y_tensor_data = torch.from_numpy(self.y_window).long()
+        x_tensor_data = torch.from_numpy(x_np_array).float().to(device)
+        y_tensor_data = torch.from_numpy(self.y_window).long().to(device)
         dataset = TensorDataset(x_tensor_data, y_tensor_data)
-        loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=False)
+        loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=False, pin_memory=True)
 
         self.one_dim_model.eval()
 
@@ -155,11 +161,13 @@ class OneDimExecution(AbstractModel):
 
         with torch.no_grad():
             for x_batch, y_batch in loader:
+                x_batch = x_batch.to(device)
+                y_batch = y_batch.to(device)
                 outputs = self.one_dim_model(x_batch)
-                predications = torch.argmax(outputs, dim=1).numpy()
+                predications = torch.argmax(outputs, dim=1).cpu().numpy()
                 
                 all_preds.extend(predications)
-                all_labels.extend(y_batch.numpy())
+                all_labels.extend(y_batch.cpu().numpy())
         
                 self.predications = all_preds
                 self.y_test_window = all_labels
@@ -206,3 +214,4 @@ class OneDimExecution(AbstractModel):
             f"Testing Time: {self.testing_time:.4f} seconds.\n",
             f"Model Size (KB): {self.model_size:.2f}\n"
         )
+
