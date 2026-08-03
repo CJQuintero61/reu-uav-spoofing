@@ -421,3 +421,88 @@ SVC MCC:       0.3484
 SVC Confusion Matrix:
 [[25492 37031]
  [ 2778 32485]]
+
+
+Run 26
+SVC Model Information:
+Model Size:         29881.2354 KB
+Training Time:      7793.6532 seconds
+Prediction Time:    1885.0865 seconds
+
+SVC Model Evaluation:
+SVC Accuracy:  0.705
+SVC Precision: 0.5623
+SVC Recall:    0.8115
+SVC F1:        0.6643
+SVC MCC:       0.4387
+SVC Confusion Matrix:
+[[40203 22106]
+ [ 6597 28402]]
+
+
+Run 27
+SVC Model Information:
+Model Size:         25173.6611 KB
+Training Time:      6426.8845 seconds
+Prediction Time:    1582.8051 seconds
+
+SVC Model Evaluation:
+SVC Accuracy:  0.661
+SVC Precision: 0.5442
+SVC Recall:    0.3415
+SVC F1:        0.4197
+SVC MCC:       0.2083
+SVC Confusion Matrix:
+[[52266  9968]
+ [22946 11902]]
+
+
+Run 28
+SVC Model Information:
+Model Size:         29497.0244 KB
+Training Time:      7952.8006 seconds
+Prediction Time:    1840.8491 seconds
+
+SVC Model Evaluation:
+SVC Accuracy:  0.683
+SVC Precision: 0.5422
+SVC Recall:    0.7672
+SVC F1:        0.6354
+SVC MCC:       0.3868
+SVC Confusion Matrix:
+[[39668 22748]
+ [ 8174 26944]]
+
+
+Run 29
+SVC Model Information:
+Model Size:         31894.7627 KB
+Training Time:      7451.9183 seconds
+Prediction Time:    2029.3969 seconds
+
+SVC Model Evaluation:
+SVC Accuracy:  0.7571
+SVC Precision: 0.6261
+SVC Recall:    0.8245
+SVC F1:        0.7117
+SVC MCC:       0.523
+SVC Confusion Matrix:
+[[44347 17366]
+ [ 6193 29085]]
+
+
+Run 30
+SVC Model Information:
+Model Size:         30260.2666 KB
+Training Time:      6879.8786 seconds
+Prediction Time:    1881.068 seconds
+
+SVC Model Evaluation:
+SVC Accuracy:  0.5145
+SVC Precision: 0.4138
+SVC Recall:    0.8267
+SVC F1:        0.5515
+SVC MCC:       0.1765
+SVC Confusion Matrix:
+[[21047 41225]
+ [ 6098 29095]]
