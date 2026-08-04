@@ -18,6 +18,15 @@ plt.rcParams.update({
     'ytick.labelsize': FONT_SIZE,
 })
 
+MODEL_COLORS = {
+    "SVC": "#4E79A7",
+    "RF": "#F28E2B",
+    "XGBoost": "#59A14F",
+    "1D-CNN": "#E15759",
+    "MLP": "#B07AA1",
+    "LSTM": "#76B7B2",
+}
+
 
 class GroupStats:
     """
@@ -427,6 +436,7 @@ class GroupStats:
         key = key.lower()
 
         labels = ['SVC', 'RF', 'XGBoost', '1D-CNN', 'MLP', 'LSTM']
+        colors = [MODEL_COLORS[label] for label in labels]
         means = [
             self.svc.scores[f'{key}_mean'],
             self.rf.scores[f'{key}_mean'],
@@ -447,6 +457,7 @@ class GroupStats:
         # sort ascending by mean, left to right
         order = np.argsort(means)
         labels = [labels[i] for i in order]
+        colors = [colors[i] for i in order]
         means = [means[i] for i in order]
         stds = [stds[i] for i in order]
 
@@ -457,7 +468,7 @@ class GroupStats:
             x, means,
             yerr=stds,
             capsize=6,
-            color=BLUE_COLOR,
+            color=colors,
             edgecolor='black',
             alpha=0.85,
             error_kw={'ecolor': 'black', 'elinewidth': 1.5}
