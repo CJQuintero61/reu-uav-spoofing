@@ -458,15 +458,20 @@ Random Forest Confusion Matrix:
 
 
 Run 28
+Random Forest Model Information:
+Model Size:         7368.1777 KB
+Training Time:      217.973 seconds
+Prediction Time:    0.5356 seconds
+
 Random Forest Model Evaluation:
-Random Forest Accuracy:  0.8969
-Random Forest Precision: 0.9113
-Random Forest Recall:    0.8969
-Random Forest F1:        0.8922
-Random Forest MCC:       0.7845
+Random Forest Accuracy:  0.943
+Random Forest Precision: 0.9476
+Random Forest Recall:    0.943
+Random Forest F1:        0.9418
+Random Forest MCC:       0.8796
 Random Forest Confusion Matrix:
-[[61615     0]
- [ 9944 24926]]
+[[62064     0]
+ [ 5562 29879]]
 
 
 Run 29
