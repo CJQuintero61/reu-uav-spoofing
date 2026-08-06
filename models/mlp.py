@@ -101,3 +101,4 @@ class MLPModel(AbstractModel):
             f"Testing Time: {self.testing_time:.4f} seconds.\n",
             f"Model Size (KB): {self.model_size:.2f}\n"
         )
+
