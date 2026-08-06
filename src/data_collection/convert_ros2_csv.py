@@ -40,11 +40,10 @@ class ReadAndConvert():
     #Need to read the folder and open each flight run_00n to csv
         #source_dir = dataset/run_00n/ros_bag
         #dataset = destination 
-    def __init__(self, source_dir: Path, csv_destination: Path, j_son: Path):
+    def __init__(self, source_dir: Path, csv_destination: Path):
         self.source_dir = source_dir
         self.csv_destination = csv_destination
         self.run_folder = self.csv_destination / "run_csv"
-        self.j_son = j_son
 
     """
 ------------- COLLECT PATHS FOR FLIGHT DATA AND CREATE FOLDER -------------
@@ -52,7 +51,10 @@ class ReadAndConvert():
 
     #collects all the flight data from the folders
     def collect_flight_data(self):
-        flight_data = list(item for item in self.source_dir.rglob("*.mcap"))
+        flight_data = sorted(
+            self.source_dir.rglob("*.mcap"),
+            key=lambda path: path.parent.parent.parent.name
+        )
 
         #Safety check
         if not flight_data:
@@ -126,6 +128,10 @@ class ReadAndConvert():
         parent_flight_data = current_mcap.parent.parent.parent
         return parent_flight_data.name
 
+    def get_meta_path(self, current_mcap):
+        parent_meta_data = current_mcap.parent.parent.parent
+        return parent_meta_data / "metadata.json"
+    
     #Estabish the csv paths
     def get_csv_path(self, current_mcap):
         name = self.get_name(current_mcap)
@@ -301,9 +307,14 @@ class ReadAndConvert():
             spoof_type = metadata.loc[0, "scenario.spoof types"]
             spoof_cond = metadata.loc[0, "scenario.gps condition"]
 
+            row_label = 0
+            row_gps_condition = "normal"
+
             #If it's spoofed calcuate the new lat and long
             if spoof_cond == "spoofed":
                 if attack_start <= elapsed_time and elapsed_time <= attack_end:
+                    row_label = 1
+                    row_gps_condition = "spoofed"
                     gps_conditions = RunGPSCondition(rows)
                     new_lat, new_long = gps_conditions.select_condition(
                         lat_meters=lat_meters, long_meters=long_meters,
@@ -341,9 +352,8 @@ class ReadAndConvert():
                 "location name": metadata.loc[0,"scenario.location name"],
                 "lat": metadata.loc[0,"scenario.location.lat"],
                 "long": metadata.loc[0,"scenario.location.long"],
-                "wind condition": metadata.loc[0,"scenario.wind condition"],
-                "label": metadata.loc[0,"label"],
-                "gps condition": metadata.loc[0,"scenario.gps condition"],
+                "label": row_label,
+                "gps condition": row_gps_condition,
                 "mission type": metadata.loc[0,"scenario.mission type"],
                 "flight duration":  metadata.loc[0,"scenario.flight duration"]
             })
@@ -375,10 +385,13 @@ class ReadAndConvert():
     def convert_ros2_csv(self, lat_meters, long_meters, drift, jump,
                          attack_start, attack_end):
         #Get director to us across different file directory formats
-
         #Collect data
         collected_data = self.collect_flight_data()
         print(f"\n-------- Collected Data --------")
+
+        #List to merge all the merged files together for 
+        #final merge
+        all_runs = []
 
         #Created folder
         self.create_folder()
@@ -387,12 +400,20 @@ class ReadAndConvert():
         #Read and start conversion
         print(f"\n-------- Starting Read on Ros Bag --------")
         for mcap in collected_data:
+            run_name = self.get_name(mcap)
+            print(f"\n-------- Processing {run_name} --------")
+            print(f"\n-------- MCAP Path: {mcap} --------")
             ros_bag = self.read_bag(mcap)
+            
             print(f"\n-------- Starting Create CSV --------")
             created_csv = self.create_csv(mcap, ros_bag)
+            
+            print(f"\n-------- Start Paths --------")
+            metadata_path = self.get_meta_path(mcap)
+            
             print(f"\n-------- Starting merge --------")
             merged = self.merge_csv(created_csv["gps"], created_csv["global"],
-                                     created_csv["odometry"], self.j_son,
+                                     created_csv["odometry"], metadata_path,
                                      lat_meters, long_meters, drift, jump,
                                      attack_start=attack_start, attack_end=attack_end)
 
@@ -400,17 +421,26 @@ class ReadAndConvert():
             print(f"\n-------- Saved Merged Items --------")
             self.save_merged_csv(merged, created_csv["merged"])
 
+            #Add each row indiviualy in this list
+            print(f"\n-------- Adding Row to List from Merged CSVs --------")
+            all_runs.extend(merged)
+        
+        #Merges all the merged runs into one CSV
+        print(f"\n-------- Saved All Runs Together in CSV --------")
+        all_merged_datasets = self.run_folder / "all_run_datasets.csv"
+        self.save_merged_csv(all_runs, all_merged_datasets)
+
         print(f"\n-------- Finished --------")
-            
+
 """
 ------------- CLIENT HANDLER -------------
 """    
 
-def client(source_dir, csv_destination, j_son,
+def client(source_dir, csv_destination,
            lat_meters, long_meters, 
            drift, jump,
            attack_start, attack_end):
-    read_folders = ReadAndConvert(source_dir, csv_destination, j_son)
+    read_folders = ReadAndConvert(source_dir, csv_destination)
     read_folders.convert_ros2_csv(lat_meters=lat_meters, long_meters=long_meters,
                                   drift=drift, jump=jump,
                                   attack_start=attack_start, attack_end=attack_end)
@@ -424,8 +454,7 @@ if __name__ == "__main__":
     #Change with your file path
     source = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset")
     destination = Path("/home/mudsk/ros_csv")
-    j_son = Path("/home/mudsk/ros2_drone_ws/src/drone_basics/dataset/run_001/metadata.json")
-    client_test = client(source, destination, j_son,
+    client_test = client(source, destination,
                          lat_meters=10, long_meters=15,
                          drift=5, jump=10,
                          attack_start=120, attack_end=350)
