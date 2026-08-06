@@ -6,6 +6,7 @@ import signal
 from pathlib import Path
 from datetime import datetime
 import shutil
+import time
 
 #import setup variables
 import data_collection_module.config_vars as variables
@@ -26,7 +27,7 @@ class ScenarioSelection():
             "location": selected_location,
             "location name": selected_location["name"],
             "altitude": random.choice(variables.altitude),
-            "gps condition": random.choice(variables.gps_conditions),
+            "gps condition": random.choices(variables.gps_conditions, weights=variables.gps_weights)[0],
             "mission type": random.choice(variables.mission_type),
             "flight duration" : 600,
             "spoof types" : random.choice(variables.spoofing_profiles)
@@ -77,6 +78,11 @@ class RunFlightHandler():
         
         command = ["make", "px4_sitl", "gz_x500"]
 
+        #Clears the old px4 if there is
+        dataman_path = variables.px4_dir / "build" / "px4_sitl_default" / "rootfs" / "dataman"
+
+        if dataman_path.exists():
+            dataman_path.unlink()
         #returns that command from the given directory and envronment variables
         return subprocess.Popen(
             command,

@@ -1,7 +1,6 @@
 #import files
 from data_collection_module.run_data_collection import ScenarioSelection, RunFlightHandler
 from data_collection_module.autonomous_flight import DroneControl
-from data_collection_module.config_vars import spoofing_profiles
 
 import asyncio
 import time
@@ -42,7 +41,7 @@ In another terminal:
 
 In another terminal:
   Run your QGroundControl
-  Example: ./QgroundControl-x86_64.AppImage
+  Example: ./QGroundControl-x86_64.AppImage
 
 In the ros2 terminal from the top run the script
 python3 client_data.py
@@ -69,6 +68,17 @@ If any of them refuse to terminate
     - (PID equals the number in the second column 
     - when using ps aux | grep -E "px4|gz|gazebo|ros2"
 
+Need to reset everything after it's not working?
+--> Run this: 
+  pkill -f "px4|gz|gazebo|gzserver|gzclient|ros2|MicroXRCEAgent"
+  ros2 daemon stop
+  sleep 2
+
+  Along with
+  rm ~/PX4-autopilot/build/px4_sitl_default/rootfs/parameters.bson
+  rm ~/PX4-autopilot/build/px4_sitl_default/rootfs/parameters_backup.bson
+  rm ~/PX4-autopilot/build/px4_sitl_default/rootfs/dataman
+
 If everything is not terminated it will lead to issues when trying to
 run the script again.
 """
@@ -91,7 +101,6 @@ class RunHandlers():
             print(f"\n-------- Mission Type: {drone_scenario["mission type"]} --------")    
             
             handler = RunFlightHandler(drone_scenario)
-            spoof = spoofing_profiles
 
             #Create and save data and folders
             handler.create_folder()
@@ -102,7 +111,7 @@ class RunHandlers():
             px4_handler = handler.start_px4_gazebo()
 
             #Waits for 10 seconds and checks to see if PX4 fails.
-            time.sleep(10)
+            time.sleep(30)
             if px4_handler.poll() is not None:
                 print("\n-------- PX4 failed to start --------")
                 return
@@ -147,7 +156,7 @@ class RunHandlers():
 #Runs n number amounts of flights using runner.run(n)
 async def main_client():
     runner = RunHandlers()
-    await runner.run(2)
+    await runner.run(30)
 
 #In this specfic file runs the main client function
 if __name__ == "__main__":
