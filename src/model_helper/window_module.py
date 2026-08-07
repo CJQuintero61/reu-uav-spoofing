@@ -1,5 +1,6 @@
 #for numpy arrays for cnn code
 import numpy as np
+from numpy.lib.stride_tricks import sliding_window_view
 
 #Sliding window code for CNN modlues.
 #CNN models (LSTM and 1D CNN) want a sliding window data format.
@@ -8,20 +9,21 @@ class WindowingModule():
         self.window_size = window_size
 
     def create_window(self, x, y):
-        x = np.array(x)
-        y = np.array(y)
+        x = np.asarray(x)
+        y = np.asarray(y)
         
-        x_window = []
-        y_window = []
+        #Creates all the windows at once and grabs all the
+        #matching labels at once.
+        x_window = sliding_window_view(
+            x,
+            window_shape=self.window_size,
+            axis=0
+        )
 
-        for i in range(len(x) - self.window_size):
-            #Add 
-            x_window.append(
-                x[i:i + self.window_size]
-            )
-
-            y_window.append(
-                y[i + self.window_size]
-            )
+        #Convert the windows and match the labels with the window size
+        x_window = np.swapaxes(x_window, 1, 2)
+        y_window = y[self.window_size:]
         
-        return np.array(x_window), np.array(y_window)
+        #x_window[:-1] makes x and y equal
+        x_window = x_window[:-1]
+        return x_window.copy(), y_window.copy()

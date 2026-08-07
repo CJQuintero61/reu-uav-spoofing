@@ -40,6 +40,10 @@ import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 
+# GPU if available, otherwise CPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
 #Data reader helper
 from window_module import WindowingModule
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
@@ -70,7 +74,7 @@ class LSTMExecution(AbstractModel):
     def __init__(self, num_features, num_classes, config):
         super().__init__()
 
-        self.lstm_model = LSTMModel(num_features, num_classes, config)
+        self.lstm_model = LSTMModel(num_features, num_classes, config).to(device)
         self.num_features = num_features
         self.num_classes = num_classes
         self.window_module = WindowingModule(config["window_size"])
@@ -90,13 +94,13 @@ class LSTMExecution(AbstractModel):
 
         #Convert to Tensor
         x_np_array = np.array(self.x_window)
-        x_tensor_data = torch.from_numpy(x_np_array).float()
-        y_tensor_data = torch.from_numpy(self.y_window).long()
+        x_tensor_data = torch.from_numpy(x_np_array).float().to(device)
+        y_tensor_data = torch.from_numpy(self.y_window).long().to(device)
         dataset = TensorDataset(x_tensor_data, y_tensor_data)
         
         #load data, assess and optimizes erros
         loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=True)
-        class_weight = torch.tensor([1.0, 4.0]).float()
+        class_weight = torch.tensor([1.0, 4.0]).float().to(device)
         criterion = nn.CrossEntropyLoss(weight=class_weight)
         optimizer = optim.Adam(self.lstm_model.parameters(), lr=self.learn_rate)
         
@@ -106,6 +110,8 @@ class LSTMExecution(AbstractModel):
             total_loss = 0
 
             for x_batch, y_batch in loader:
+                x_batch = x_batch.to(device)
+                y_batch = y_batch.to(device)
                 optimizer.zero_grad()
                 outputs = self.lstm_model(x_batch)
                 loss = criterion(outputs, y_batch)
@@ -138,8 +144,8 @@ class LSTMExecution(AbstractModel):
         
         #Convert to Tensor
         x_np_array = np.array(self.x_window)
-        x_tensor_data = torch.from_numpy(x_np_array).float()
-        y_tensor_data = torch.from_numpy(self.y_window).long()
+        x_tensor_data = torch.from_numpy(x_np_array).float().to(device)
+        y_tensor_data = torch.from_numpy(self.y_window).long().to(device)
         dataset = TensorDataset(x_tensor_data, y_tensor_data)
         loader = DataLoader(dataset, batch_size=self.bat_size, shuffle=False)
 
@@ -152,11 +158,13 @@ class LSTMExecution(AbstractModel):
         #Used to predict using the trained model
         with torch.no_grad():
             for x_batch, y_batch in loader:
+                x_batch = x_batch.to(device)
+                y_batch = y_batch.to(device)
                 outputs = self.lstm_model(x_batch)
-                predications = torch.argmax(outputs, dim=1).numpy()
+                predications = torch.argmax(outputs, dim=1).cpu().numpy()
                 
                 all_preds.extend(predications)
-                all_labels.extend(y_batch.numpy())
+                all_labels.extend(y_batch.cpu().numpy())
         
                 self.predications = all_preds
                 self.y_test_window = all_labels

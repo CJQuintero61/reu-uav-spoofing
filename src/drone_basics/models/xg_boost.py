@@ -32,12 +32,15 @@ class XGBoostModel(AbstractModel):
         self.n_est = config["n_estimators"]
         self.learn_rate = config["learning_rate"]
         self.max_dep = config["max_depth"] 
+        self.scale_weight = config["scale_pos_weight"]
 
         #model with default parameters = 100% nope
         self.xgb_model = xgb.XGBClassifier(
             n_estimators=self.n_est,
             learning_rate=self.learn_rate,
-            max_depth=self.max_dep
+            max_depth=self.max_dep,
+            scale_pos_weight=self.scale_weight
+
         )
         
     def train_model(self, data):
@@ -106,3 +109,4 @@ class XGBoostModel(AbstractModel):
             f"Testing Time: {self.testing_time:.4f} seconds.\n",
             f"Model Size (KB): {self.model_size:.2f}\n"
         )
+

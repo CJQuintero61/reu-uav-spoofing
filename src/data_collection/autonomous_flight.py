@@ -38,15 +38,32 @@ class DroneControl():
 
     #Wait for ready
     async def wait_until_ready(self):
-       async for health in self.drone.telemetry.health():
-           if health.is_global_position_ok and health.is_home_position_ok:
-               print("Drone ready")
-               break
+        async for health in self.drone.telemetry.health():
+            print(
+                "Health:",
+                "global:", health.is_global_position_ok,
+                "home:", health.is_home_position_ok,
+                "local:", health.is_local_position_ok,
+                "armable:", health.is_armable,
+            )
+
+            if (
+                health.is_global_position_ok
+                and health.is_home_position_ok
+                and health.is_local_position_ok
+                and health.is_armable
+            ):
+                print("Position ready")
+                break
+
+            await asyncio.sleep(1)
 
     #Arms the drone ready to fly
     async def arm_vehicle(self):
+        print("Waiting until drone is armable before arming...")
+        await self.wait_until_ready()
         await self.drone.action.arm()
-    
+        
     #Takeoff
     async def takeoff(self):
         await self.drone.action.set_takeoff_altitude(self.altitude)
@@ -124,7 +141,9 @@ class DroneControl():
 
     #Hover Mission
     async def fly_hover_mission(self, duration_sec):
+        print("\n-------- Mission started --------")
         #Take off and hover for duration time
+        print("\n-------- Starting Arm and Takeoff --------")
         await self.arm_vehicle()
         await self.takeoff()
         await asyncio.sleep(duration_sec)
@@ -196,16 +215,19 @@ class DroneControl():
         elif self.mission == "square":
             #Testing for time.
             await self.drone.mission.clear_mission()
+            print("\n-------- Mission cleared --------")
 
             #Generate the mission and upload it
             mission_plan = await self.generate_square_mission(speed_m_s=15)    
             await self.upload_mission(mission_plan)
 
             #Arm the drone and set or takeoff
+            print("\n-------- Starting Arm and Takeoff --------")
             await self.arm_vehicle()
             await self.takeoff()
 
             #Start the mission and land adter duration_sec
+            print("\n-------- Mission started --------")
             await self.start_mission()
             await asyncio.sleep(duration_sec)               
 
@@ -230,6 +252,7 @@ class DroneControl():
             #Generate Mission
             #Clear the first mission
             await self.drone.mission.clear_mission()
+            print("\n-------- Mission cleared --------")
 
             mission_plan = await self.generate_circle_mission(
                 center_lat=center["lat"],
@@ -241,10 +264,12 @@ class DroneControl():
             await self.upload_mission(mission_plan)
 
             #Arm and ready for takeoff
+            print("\n-------- Starting Arm and Takeoff --------")
             await self.arm_vehicle()
             await self.takeoff()
 
             #Start and land drone after duration_sec
+            print("\n-------- Mission started --------")
             await self.start_mission()     
             await asyncio.sleep(duration_sec)
             await self.land_vehicle()

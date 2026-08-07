@@ -52,6 +52,8 @@ locations = [
 altitude = [10, 30, 40, 50]
 mission_type = ["hover", "square", "circle"]
 gps_conditions = ["normal", "spoofed"] #Can add more types
+#random.choices accepts relative weights. Don't need to sum to 1
+gps_weights = [0.90, 0.07] 
 
 #Starting area TAMU-CC
 waypoint_tamucc = [
