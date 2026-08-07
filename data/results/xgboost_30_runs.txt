@@ -1,0 +1,376 @@
+Model: xgboost
+Repeated 80/20 Evaluation for 30
+Configuration 3
+Parameters: {'n_estimators': 300, 'learning_rate': 0.05, 'max_depth': 8, 'scale_pos_weight': 25}
+All Run Metrics: 
+Run 1:
+   accuracy: 0.999544
+   precision: 0.999545
+   recall: 0.999544
+   f1: 0.999544
+   confusion matrix:
+[[61382     0]
+ [   44 35125]]
+   spoof recall: 0.998749
+   training time: 14.560646
+   testing time: 1.097071
+   model size: 934.493164
+Run 2:
+   accuracy: 0.879074
+   precision: 0.898320
+   recall: 0.879074
+   f1: 0.872143
+   confusion matrix:
+[[62964     0]
+ [11918 23674]]
+   spoof recall: 0.665149
+   training time: 18.812387
+   testing time: 1.086881
+   model size: 873.765625
+Run 3:
+   accuracy: 0.883965
+   precision: 0.901786
+   recall: 0.883965
+   f1: 0.877663
+   confusion matrix:
+[[63005     0]
+ [11432 24085]]
+   spoof recall: 0.678126
+   training time: 16.498127
+   testing time: 1.206176
+   model size: 821.651367
+Run 4:
+   accuracy: 0.983718
+   precision: 0.984122
+   recall: 0.983718
+   f1: 0.983632
+   confusion matrix:
+[[62934     0]
+ [ 1601 33797]]
+   spoof recall: 0.954771
+   training time: 15.234922
+   testing time: 0.965248
+   model size: 964.924805
+Run 5:
+   accuracy: 0.939538
+   precision: 0.944756
+   recall: 0.939538
+   f1: 0.938129
+   confusion matrix:
+[[62536     0]
+ [ 5907 29254]]
+   spoof recall: 0.832001
+   training time: 15.218363
+   testing time: 0.754067
+   model size: 978.265625
+Run 6:
+   accuracy: 0.867074
+   precision: 0.874443
+   recall: 0.867074
+   f1: 0.861596
+   confusion matrix:
+[[61264  1946]
+ [11133 24050]]
+   spoof recall: 0.683569
+   training time: 13.304600
+   testing time: 1.016347
+   model size: 842.253906
+Run 7:
+   accuracy: 0.985824
+   precision: 0.986131
+   recall: 0.985824
+   f1: 0.985759
+   confusion matrix:
+[[62365     0]
+ [ 1381 33671]]
+   spoof recall: 0.960601
+   training time: 14.258303
+   testing time: 0.911037
+   model size: 880.296875
+Run 8:
+   accuracy: 0.976169
+   precision: 0.977637
+   recall: 0.976169
+   f1: 0.976320
+   confusion matrix:
+[[60202  2340]
+ [    0 35649]]
+   spoof recall: 1.000000
+   training time: 16.800101
+   testing time: 1.461761
+   model size: 919.945312
+Run 9:
+   accuracy: 0.999167
+   precision: 0.999168
+   recall: 0.999167
+   f1: 0.999167
+   confusion matrix:
+[[62978     8]
+ [   74 35389]]
+   spoof recall: 0.997913
+   training time: 16.601348
+   testing time: 1.354916
+   model size: 926.906250
+Run 10:
+   accuracy: 0.830380
+   precision: 0.865847
+   recall: 0.830380
+   f1: 0.813994
+   confusion matrix:
+[[63689     0]
+ [16838 18742]]
+   spoof recall: 0.526757
+   training time: 15.141210
+   testing time: 0.922074
+   model size: 838.375000
+Run 11:
+   accuracy: 0.879514
+   precision: 0.898620
+   recall: 0.879514
+   f1: 0.872622
+   confusion matrix:
+[[62243     0]
+ [11730 23383]]
+   spoof recall: 0.665936
+   training time: 15.868659
+   testing time: 0.797960
+   model size: 919.244141
+Run 12:
+   accuracy: 0.931604
+   precision: 0.938193
+   recall: 0.931604
+   f1: 0.929728
+   confusion matrix:
+[[62864     0]
+ [ 6702 28422]]
+   spoof recall: 0.809190
+   training time: 13.258617
+   testing time: 0.921556
+   model size: 907.084961
+Run 13:
+   accuracy: 0.987477
+   precision: 0.987716
+   recall: 0.987477
+   f1: 0.987425
+   confusion matrix:
+[[63376     0]
+ [ 1234 33925]]
+   spoof recall: 0.964902
+   training time: 12.673659
+   testing time: 0.773608
+   model size: 916.435547
+Run 14:
+   accuracy: 0.936788
+   precision: 0.942476
+   recall: 0.936788
+   f1: 0.935242
+   confusion matrix:
+[[62875     0]
+ [ 6217 29260]]
+   spoof recall: 0.824760
+   training time: 15.342693
+   testing time: 1.659250
+   model size: 928.045898
+Run 15:
+   accuracy: 1.000000
+   precision: 1.000000
+   recall: 1.000000
+   f1: 1.000000
+   confusion matrix:
+[[62391     0]
+ [    0 35474]]
+   spoof recall: 1.000000
+   training time: 15.818496
+   testing time: 1.140727
+   model size: 946.649414
+Run 16:
+   accuracy: 0.974546
+   precision: 0.975525
+   recall: 0.974546
+   f1: 0.974333
+   confusion matrix:
+[[61692     0]
+ [ 2467 32760]]
+   spoof recall: 0.929968
+   training time: 15.922504
+   testing time: 1.359660
+   model size: 955.154297
+Run 17:
+   accuracy: 0.982381
+   precision: 0.982852
+   recall: 0.982381
+   f1: 0.982279
+   confusion matrix:
+[[62928     0]
+ [ 1729 33477]]
+   spoof recall: 0.950889
+   training time: 16.685947
+   testing time: 0.933721
+   model size: 952.498047
+Run 18:
+   accuracy: 1.000000
+   precision: 1.000000
+   recall: 1.000000
+   f1: 1.000000
+   confusion matrix:
+[[61791     0]
+ [    0 35100]]
+   spoof recall: 1.000000
+   training time: 13.501559
+   testing time: 0.724512
+   model size: 941.003906
+Run 19:
+   accuracy: 0.995013
+   precision: 0.995051
+   recall: 0.995013
+   f1: 0.995005
+   confusion matrix:
+[[61498     0]
+ [  480 34265]]
+   spoof recall: 0.986185
+   training time: 12.652087
+   testing time: 0.940998
+   model size: 1012.384766
+Run 20:
+   accuracy: 0.923126
+   precision: 0.931371
+   recall: 0.923126
+   f1: 0.920711
+   confusion matrix:
+[[62471     0]
+ [ 7505 27651]]
+   spoof recall: 0.786523
+   training time: 12.161854
+   testing time: 0.657194
+   model size: 876.511719
+Run 21:
+   accuracy: 0.995903
+   precision: 0.995929
+   recall: 0.995903
+   f1: 0.995898
+   confusion matrix:
+[[62593     0]
+ [  402 35129]]
+   spoof recall: 0.988686
+   training time: 12.222901
+   testing time: 0.817199
+   model size: 987.908203
+Run 22:
+   accuracy: 1.000000
+   precision: 1.000000
+   recall: 1.000000
+   f1: 1.000000
+   confusion matrix:
+[[62385     0]
+ [    0 35333]]
+   spoof recall: 1.000000
+   training time: 12.552235
+   testing time: 0.796854
+   model size: 1002.549805
+Run 23:
+   accuracy: 1.000000
+   precision: 1.000000
+   recall: 1.000000
+   f1: 1.000000
+   confusion matrix:
+[[62347     0]
+ [    0 35211]]
+   spoof recall: 1.000000
+   training time: 11.779279
+   testing time: 0.630047
+   model size: 948.909180
+Run 24:
+   accuracy: 1.000000
+   precision: 1.000000
+   recall: 1.000000
+   f1: 1.000000
+   confusion matrix:
+[[61954     0]
+ [    0 34975]]
+   spoof recall: 1.000000
+   training time: 14.075358
+   testing time: 1.023889
+   model size: 974.298828
+Run 25:
+   accuracy: 0.983697
+   precision: 0.984102
+   recall: 0.983697
+   f1: 0.983611
+   confusion matrix:
+[[62003     0]
+ [ 1581 33391]]
+   spoof recall: 0.954792
+   training time: 15.831596
+   testing time: 0.774562
+   model size: 950.506836
+Run 26:
+   accuracy: 0.999980
+   precision: 0.999980
+   recall: 0.999980
+   f1: 0.999980
+   confusion matrix:
+[[62353     2]
+ [    0 35499]]
+   spoof recall: 1.000000
+   training time: 15.827362
+   testing time: 1.129342
+   model size: 945.973633
+Run 27:
+   accuracy: 0.762566
+   precision: 0.826784
+   recall: 0.762566
+   f1: 0.722614
+   confusion matrix:
+[[62203     0]
+ [23061 11862]]
+   spoof recall: 0.339662
+   training time: 16.221264
+   testing time: 0.875366
+   model size: 872.787109
+Run 28:
+   accuracy: 0.999969
+   precision: 0.999969
+   recall: 0.999969
+   f1: 0.999969
+   confusion matrix:
+[[62230     3]
+ [    0 35193]]
+   spoof recall: 1.000000
+   training time: 15.693575
+   testing time: 1.210548
+   model size: 904.936523
+Run 29:
+   accuracy: 0.997599
+   precision: 0.997608
+   recall: 0.997599
+   f1: 0.997597
+   confusion matrix:
+[[62699     0]
+ [  236 35356]]
+   spoof recall: 0.993369
+   training time: 17.236416
+   testing time: 0.993056
+   model size: 967.420898
+Run 30:
+   accuracy: 0.990221
+   precision: 0.990368
+   recall: 0.990221
+   f1: 0.990190
+   confusion matrix:
+[[62173     0]
+ [  949 33920]]
+   spoof recall: 0.972784
+   training time: 15.383103
+   testing time: 1.244085
+   model size: 891.840820
+
+Averages: 
+   Average Accuracy: 0.956161
+   Average Precision: 0.962610
+   Average Recall: 0.956161
+   Average F1: 0.953172
+   Average Training Time: 14.904639
+   Average Testing Time: 1.005990
+   Average Model Size: 926.100749
+--------------------------------------------------
+
