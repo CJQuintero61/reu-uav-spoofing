@@ -3,6 +3,8 @@ from models.lstm_model import LSTMExecution
 from models.mlp import MLPModel
 from models.one_dim_Cnn import OneDimExecution
 from models.xg_boost import XGBoostModel
+from models.svc import SVCModel
+from models.random_forest import RandomForestModel
 
 #import action types
 from execute_action import TrainAction, TestAction, EvaluateAction
@@ -14,6 +16,13 @@ class ModelFactory():
         #Avoids using if else and cases
         model_type = model_type.lower().strip()
         model_map = {
+            # svc
+            'svc' : lambda: SVCModel(),
+
+            # random forest
+            'rf' : lambda: RandomForestModel(),
+            'random forest' : lambda: RandomForestModel(),
+
             #XGBoost and every case
             "xgboost" : lambda: XGBoostModel(config=config),
             "xg boost": lambda: XGBoostModel(config=config),
