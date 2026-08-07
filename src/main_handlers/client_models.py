@@ -1,5 +1,5 @@
 #imports
-from read_data import ReadFlightData
+from main_handlers.read_data import ReadFlightData
 from factories import ModelFactory, ActionFactory
 from deep_learning_handler import DataSetup
 

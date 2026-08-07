@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 from sklearn.model_selection import train_test_split
-from read_data import ReadFlightData
+from main_handlers.read_data import ReadFlightData
 
 #Deep learning specific data reading module
 class DataSetup():

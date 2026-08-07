@@ -32,7 +32,7 @@ The pipeline for this specific file:
 """
 
 #Import for abstract
-from abstracts import AbstractModel
+from src.model_helper.abstracts import AbstractModel
 
 #1D-CNN model imports
 import torch
@@ -46,7 +46,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 #Data reader helper
-from window_module import WindowingModule
+from src.model_helper.window_module import WindowingModule
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 import time
 import os

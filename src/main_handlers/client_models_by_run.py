@@ -1,10 +1,9 @@
 #imports
-from read_data import ReadFlightData
-from factories import ModelFactory, ActionFactory
-from run_splitter import DataSetup
-from parameter_dic import xg_boost_para, mlp_para, lstm_para, oneD_para
+from src.main_handlers.read_data import ReadFlightData
+from src.model_helper.factories import ModelFactory, ActionFactory
+from src.model_helper.run_splitter import DataSetup
+from src.model_helper.parameter_dic import xg_boost_para, mlp_para, lstm_para, oneD_para, svc_para, rf_para
 import os
-from real_data_reader import ReadRealFlightData
 
 #Client code
 class ClientController():
@@ -15,7 +14,7 @@ class ClientController():
         self.model_factory = ModelFactory()
         self.action_factory = ActionFactory()
         self.run_splitter = DataSetup(self.read_flight_data)
-        self.real_data = ReadRealFlightData()
+        
  
     def client_code(self, model_type, run_number, configs):
         """
@@ -23,7 +22,7 @@ class ClientController():
         """
         #Prepare the data and results for models and comparison.
         model_type = model_type.lower().strip()
-        #self.real_data.data_clean()
+        
         self.read_flight_data.data_clean()
 
         config_amount = 1
@@ -31,7 +30,7 @@ class ClientController():
 
         #Makes the folder results found in ros2_drone_ws
 
-        #folder = "results_real_data"
+        
         folder = "results_30"
         #folder = "results"
         filename = os.path.join(folder, f"{model_type}_results_30.txt")
@@ -56,14 +55,11 @@ class ClientController():
                     print(f"Iteration {i + 1} out of {run_number}")
                     #IF doing by run
                     self.run_splitter.split_data_by_run()
-                    #self.real_data.split_random_data(random_state=i)
 
                     """
                             MODEL PARAMETERS
                     """
                     #For all model types
-                    """self.x_train = self.real_data.X_Train
-                    self.y_train = self.real_data.Y_Train"""
 
                     self.x_train = self.read_flight_data.X_Train
                     self.y_train = self.read_flight_data.Y_Train
@@ -96,11 +92,6 @@ class ClientController():
                     test = self.action_factory.create("test")
                     evaluate = self.action_factory.create("evaluate")
                     
-                    """
-                    train.execute(model, self.real_data)
-                    test.execute(model, self.real_data)
-                    evaluate.execute(model, self.real_data)
-                    """
 
                     train.execute(model, self.read_flight_data)
                     test.execute(model, self.read_flight_data)
@@ -195,6 +186,6 @@ class ClientController():
 if __name__ == "__main__":
     print("Client started\n")
     client = ClientController()
-    #For string argument: xgboost, mlp, lstm, 1d, 
-    #For third argument: xg_boost_para, mlp_para, lstm_para, oneD_para
-    client.client_code("1d", 30, oneD_para)
+    #For string argument: xgboost, mlp, lstm, 1d, rf, svc
+    #For third argument: xg_boost_para, mlp_para, lstm_para, oneD_para, rf_para, svc_para
+    client.client_code("xgboost", 30, xg_boost_para)

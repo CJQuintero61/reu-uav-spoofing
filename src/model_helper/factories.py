@@ -7,7 +7,7 @@ from models.svc import SVCModel
 from models.random_forest import RandomForestModel
 
 #import action types
-from execute_action import TrainAction, TestAction, EvaluateAction
+from src.model_helper.execute_action import TrainAction, TestAction, EvaluateAction
 
 #Model "Factory" creates/runs the model type
 class ModelFactory():    
@@ -17,11 +17,11 @@ class ModelFactory():
         model_type = model_type.lower().strip()
         model_map = {
             # svc
-            'svc' : lambda: SVCModel(),
+            'svc' : lambda: SVCModel(config=config),
 
             # random forest
-            'rf' : lambda: RandomForestModel(),
-            'random forest' : lambda: RandomForestModel(),
+            'rf' : lambda: RandomForestModel(config=config),
+            'random forest' : lambda: RandomForestModel(config=config),
 
             #XGBoost and every case
             "xgboost" : lambda: XGBoostModel(config=config),

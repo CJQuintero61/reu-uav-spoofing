@@ -7,7 +7,7 @@ This file implements the support vector classifier
 import time
 import pickle
 import pandas as pd
-from abstracts import AbstractModel
+from src.model_helper.abstracts import AbstractModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC

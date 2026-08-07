@@ -7,7 +7,7 @@ This file implements the random forest classifier
 import time
 import pickle
 import pandas as pd
-from abstracts import AbstractModel
+from src.model_helper.abstracts import AbstractModel
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, matthews_corrcoef
 

@@ -1,5 +1,5 @@
 #Import abstract file
-from abstracts import AbstractAction
+from src.model_helper.abstracts import AbstractAction
 
 class TrainAction(AbstractAction):
     def execute(self, model, data):

@@ -17,7 +17,7 @@ The pipeline for this specific file:
 """
 
 #Model abtract
-from abstracts import AbstractModel
+from src.model_helper.abstracts import AbstractModel
 
 #Imports for models
 from sklearn.neural_network import MLPClassifier #MLP

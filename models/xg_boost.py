@@ -17,7 +17,7 @@ The pipeline for this specific file:
 """
 
 #Import for abstract and supports
-from abstracts import AbstractModel
+from src.model_helper.abstracts import AbstractModel
 
 #Import for models
 import xgboost as xgb #XGBoost
